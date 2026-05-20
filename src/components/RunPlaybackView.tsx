@@ -172,7 +172,7 @@ export default function RunPlaybackView({ cityId, routeIndex, image, onExit, onC
                      onClick={() => onComplete({ distance, duration: time, calories: Math.floor(distance * 65) })}
                      className="w-full py-3.5 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold rounded-xl transition-colors tracking-wide shadow-[0_0_20px_rgba(34,211,238,0.3)]"
                    >
-                     收下光迹值
+                     确认
                    </button>
               </motion.div>
            </motion.div>

@@ -1,80 +1,124 @@
-import { motion } from 'motion/react';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Sparkles, ArrowRight, ChevronRight, Check } from 'lucide-react';
 
 interface IntroScreenProps {
   onComplete: () => void;
 }
 
+const introSteps = [
+  {
+    id: 'step1',
+    title: '点亮地球计划',
+    subtitle: 'THE STELLAR LEAP',
+    text: '公元3026年，人类早已星际移民。新的轨道、新的家园，我们在群星之间建立起庞大的星际网络。',
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop', // Earth / space
+  },
+  {
+    id: 'step2',
+    title: '母星回音',
+    subtitle: 'ECHOES OF EARTH',
+    text: '走向宇宙深处，人们却越发想念那颗蓝色的母星。想念巴黎清晨的雾，想念开罗金字塔前的热风，想念南京城墙下梧桐落叶的声音...',
+    image: 'https://images.unsplash.com/photo-1517505971485-618774070da8?q=80&w=800&auto=format&fit=crop', // City neon/nostalgia
+  },
+  {
+    id: 'step3',
+    title: '光迹探索者',
+    subtitle: 'GLOWTRAIL EXPLORER',
+    text: '你不是普通的运动者，你是隶属地球复兴局的「光迹探索者」。你的任务就是通过每一次奔跑，重新连接母星网络，唤醒地球的记忆。',
+    image: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=800&auto=format&fit=crop', // Runner / dark
+  }
+];
+
 export default function IntroScreen({ onComplete }: IntroScreenProps) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const step = introSteps[currentStep];
+
+  const handleNext = () => {
+    if (currentStep < introSteps.length - 1) {
+      setCurrentStep(prev => prev + 1);
+    } else {
+      onComplete();
+    }
+  };
+
   return (
     <motion.div 
-      className="absolute inset-0 z-[200] bg-[#05070A] flex flex-col justify-between p-8 overflow-hidden"
+      className="absolute inset-0 z-[200] bg-[#05070A] overflow-hidden flex flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 1 } }}
+      exit={{ opacity: 0, transition: { duration: 0.8 } }}
     >
-      {/* Background elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 -left-20 w-64 h-64 bg-cyan-900/40 rounded-full blur-[100px] mix-blend-screen" />
-        <div className="absolute bottom-1/4 -right-20 w-64 h-64 bg-amber-900/20 rounded-full blur-[100px] mix-blend-screen" />
+      <div className="flex-1 relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, filter: 'blur(10px)' }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#05070A]/80 to-[#05070A] z-10" />
+            <img src={step.image} alt={step.title} className="w-full h-full object-cover" />
+          </motion.div>
+        </AnimatePresence>
+        
+        {/* Top left decorative */}
+        <div className="absolute top-8 left-6 z-20 flex items-center gap-2">
+          <Sparkles className="text-cyan-400" size={18} />
+        </div>
       </div>
 
-      <div className="relative z-10 space-y-8 mt-20">
-        <motion.div
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 1, delay: 0.5 }}
-           className="flex items-center gap-2 mb-12"
-        >
-          <Sparkles className="text-cyan-400" size={24} />
-          <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">
-            星迹跃迁计划
-          </h1>
-        </motion.div>
+      <div className="relative z-20 px-8 pb-12 pt-6 shrink-0 bg-[#05070A]">
+        {/* Step indicators */}
+        <div className="flex gap-2 mb-8 items-center">
+          {introSteps.map((_, idx) => (
+            <div 
+              key={idx} 
+              className={`h-1.5 rounded-full transition-all duration-500 ${
+                idx === currentStep ? 'w-8 bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]' : 'w-2 bg-slate-800'
+              }`} 
+            />
+          ))}
+        </div>
 
-        <motion.p 
-          className="text-lg text-slate-300 leading-relaxed font-medium"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.5 }}
-        >
-          公元3026年，人类早已星际移民。
-        </motion.p>
-        
-        <motion.p 
-          className="text-lg text-slate-300 leading-relaxed font-medium"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 3.5 }}
-        >
-          可是当人们走向宇宙深处，却越发想念那颗蓝色的母星。想念巴黎清晨的雾，想念东京街口的人潮，想念开罗金字塔前吹来的热风，也想念南京城墙下，梧桐叶落在路面的声音...
-        </motion.p>
-        
-        <motion.p 
-          className="text-lg text-slate-300 leading-relaxed font-medium"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 6 }}
-        >
-          你，不是普通运动者。你是一名<span className="text-cyan-400 font-bold mx-1">光迹探索者 (Glowtrail Explorer)</span>。<br/><br/>
-          你的任务，是通过每一次出发，唤醒一段地球记忆；每完成一条路线，点亮一道母星光迹。
-        </motion.p>
-      </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-4 min-h-[140px]"
+          >
+            <div>
+              <h2 className="text-xs font-mono text-cyan-500/80 tracking-widest mb-1">{step.subtitle}</h2>
+              <h1 className="text-3xl font-bold text-slate-100 tracking-wide">{step.title}</h1>
+            </div>
+            <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
+              {step.text}
+            </p>
+          </motion.div>
+        </AnimatePresence>
 
-      <motion.div 
-        className="relative z-10 mb-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 8.5 }}
-      >
         <button 
-          onClick={onComplete}
-          className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold text-lg rounded-2xl transition-colors tracking-widest shadow-[0_0_30px_rgba(34,211,238,0.2)] flex items-center justify-center group"
+          onClick={handleNext}
+          className="w-full mt-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-[#05070A] font-bold text-lg rounded-2xl transition-all shadow-[0_0_20px_rgba(34,211,238,0.2)] flex items-center justify-center group"
         >
-          <span>接受任务</span>
-          <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+          {currentStep === introSteps.length - 1 ? (
+            <>
+              <span className="tracking-widest">接受任务</span>
+              <Check className="ml-2" size={20} />
+            </>
+          ) : (
+            <>
+              <span className="tracking-widest">下一步</span>
+              <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+            </>
+          )}
         </button>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }

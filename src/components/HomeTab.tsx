@@ -614,7 +614,7 @@ export default function HomeTab({ onNavigate, completedChapters = [], targetFlig
                 <div className="w-full py-12 px-6 bg-slate-900/50 border border-slate-700/50 rounded-2xl flex flex-col items-center justify-center text-center mb-6 shadow-inner relative overflow-hidden">
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent"></div>
                   <Compass size={32} className="text-cyan-500 animate-pulse mb-4 relative z-10" />
-                  <h3 className="text-lg font-bold text-slate-200 tracking-wider mb-2 relative z-10">母星网络尚未连接</h3>
+                  <h3 className="text-lg font-bold text-slate-200 tracking-wider mb-2 relative z-10">点亮地球计划待开启</h3>
                   <p className="text-sm text-slate-400 leading-relaxed mb-4 relative z-10">
                     地球的记忆仍在一片暗淡之中。<br className="hidden sm:block" />您的奔跑，是重启这些城市坐标的唯一能源。
                   </p>
@@ -727,28 +727,46 @@ export default function HomeTab({ onNavigate, completedChapters = [], targetFlig
             </div>
             
             <div className="w-full flex flex-col gap-4">
-              {selectableCities.map((city, idx) => (
+              {selectableCities.map((city, idx) => {
+                const completedCount = city.completedRouteIndices?.length || 0;
+                const totalRoutes = city.routes || 3;
+                
+                return (
                 <motion.div
                   key={city.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
-                  className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-xl"
+                  className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden shadow-xl cursor-pointer"
                   onClick={() => handleCitySelect(city)}
                 >
-                  <div className="relative h-24">
+                  <div className="relative h-28">
                     <img src={city.image} alt={city.name} className="absolute inset-0 w-full h-full object-cover opacity-60" referrerPolicy="no-referrer" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
-                    <div className="absolute inset-0 flex items-center justify-between px-6">
-                      <div>
-                        <h3 className="text-xl font-bold text-white drop-shadow-md">{city.name}</h3>
-                        <p className="text-xs text-cyan-300 font-mono tracking-widest uppercase">{city.englishName}</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col justify-end">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h3 className="text-xl font-bold text-white drop-shadow-md">{city.name}</h3>
+                          <p className="text-xs text-cyan-300 font-mono tracking-widest uppercase mt-0.5">{city.englishName}</p>
+                        </div>
+                        <ChevronRight className="text-white/50 w-5 h-5" />
                       </div>
-                      <ChevronRight className="text-white/50" />
+                      
+                      <div className="w-full bg-slate-800/80 rounded-full h-1.5 overflow-hidden">
+                        <div 
+                          className="bg-cyan-500 h-full transition-all duration-500 shadow-[0_0_8px_rgba(34,211,238,0.6)]"
+                          style={{ width: `${Math.min(100, (completedCount / totalRoutes) * 100)}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between mt-1 text-[10px] text-slate-400 font-mono">
+                        <span>进度</span>
+                        <span className="text-cyan-400">{completedCount}/{totalRoutes} 路线</span>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
             
             <button 
