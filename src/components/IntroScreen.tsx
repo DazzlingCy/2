@@ -9,7 +9,7 @@ interface IntroScreenProps {
 const introSteps = [
   {
     id: 'step1',
-    title: '点亮地球计划',
+    title: '奔跑点亮地球计划',
     subtitle: 'THE STELLAR LEAP',
     text: '公元3026年，人类早已星际移民。新的轨道、新的家园，我们在群星之间建立起庞大的星际网络。',
     image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=90&w=1200&auto=format&fit=crop', // Earth / space

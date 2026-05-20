@@ -29,7 +29,7 @@ export default function HomeTab({ onNavigate, completedChapters = [], targetFlig
   
   const numMap = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'];
 
-  let currentChapterText = "点亮地球计划尚未开启";
+  let currentChapterText = "奔跑点亮地球计划尚未开启";
   let progressWidth = '0%';
   
   if (litCityIds.length === 0) {
@@ -446,7 +446,7 @@ export default function HomeTab({ onNavigate, completedChapters = [], targetFlig
            <div className="absolute -bottom-10 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
            <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 mb-1 drop-shadow-sm">点亮地球计划</h3>
+                <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 mb-1 drop-shadow-sm">奔跑点亮地球计划</h3>
                 <p className="text-xs text-slate-400 line-clamp-1">{currentChapterText}</p>
                 {inProgressCity && (
                   <div className="mt-2 text-[10px] text-cyan-400 font-mono flex items-center bg-cyan-500/10 w-fit px-2 py-1 rounded">
@@ -585,7 +585,7 @@ export default function HomeTab({ onNavigate, completedChapters = [], targetFlig
             <div className="flex items-center justify-between p-6 pb-2 border-b border-white/5 relative bg-gradient-to-b from-cyan-900/20 to-transparent">
               <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
               <div>
-                <h2 className="text-2xl font-bold text-slate-100 mb-1">点亮地球计划</h2>
+                <h2 className="text-2xl font-bold text-slate-100 mb-1">奔跑点亮地球计划</h2>
                 <p className="text-xs text-cyan-400 opacity-80 tracking-widest font-mono">MOVEVI World Light Project</p>
               </div>
               <button 
@@ -614,7 +614,7 @@ export default function HomeTab({ onNavigate, completedChapters = [], targetFlig
                 <div className="w-full py-12 px-6 bg-slate-900/50 border border-slate-700/50 rounded-2xl flex flex-col items-center justify-center text-center mb-6 shadow-inner relative overflow-hidden">
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent"></div>
                   <Compass size={32} className="text-cyan-500 animate-pulse mb-4 relative z-10" />
-                  <h3 className="text-lg font-bold text-slate-200 tracking-wider mb-2 relative z-10">点亮地球计划待开启</h3>
+                  <h3 className="text-lg font-bold text-slate-200 tracking-wider mb-2 relative z-10">奔跑点亮地球计划待开启</h3>
                   <p className="text-sm text-slate-400 leading-relaxed mb-4 relative z-10">
                     地球的记忆仍在一片暗淡之中。<br className="hidden sm:block" />您的奔跑，是重启这些城市坐标的唯一能源。
                   </p>
