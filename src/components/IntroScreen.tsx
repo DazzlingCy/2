@@ -12,21 +12,21 @@ const introSteps = [
     title: '点亮地球计划',
     subtitle: 'THE STELLAR LEAP',
     text: '公元3026年，人类早已星际移民。新的轨道、新的家园，我们在群星之间建立起庞大的星际网络。',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop', // Earth / space
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=90&w=1200&auto=format&fit=crop', // Earth / space
   },
   {
     id: 'step2',
     title: '母星回音',
     subtitle: 'ECHOES OF EARTH',
     text: '走向宇宙深处，人们却越发想念那颗蓝色的母星。想念巴黎清晨的雾，想念开罗金字塔前的热风，想念南京城墙下梧桐落叶的声音...',
-    image: 'https://images.unsplash.com/photo-1517505971485-618774070da8?q=80&w=800&auto=format&fit=crop', // City neon/nostalgia
+    image: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=90&w=1200&auto=format&fit=crop', // City neon/nostalgia
   },
   {
     id: 'step3',
     title: '光迹探索者',
     subtitle: 'GLOWTRAIL EXPLORER',
     text: '你不是普通的运动者，你是隶属地球复兴局的「光迹探索者」。你的任务就是通过每一次奔跑，重新连接母星网络，唤醒地球的记忆。',
-    image: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=800&auto=format&fit=crop', // Runner / dark
+    image: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=90&w=1200&auto=format&fit=crop', // Runner / dark
   }
 ];
 

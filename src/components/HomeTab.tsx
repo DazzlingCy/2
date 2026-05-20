@@ -752,9 +752,9 @@ export default function HomeTab({ onNavigate, completedChapters = [], targetFlig
                         <ChevronRight className="text-white/50 w-5 h-5" />
                       </div>
                       
-                      <div className="w-full bg-slate-800/80 rounded-full h-1.5 overflow-hidden">
+                      <div className="w-full bg-slate-700/80 rounded-full h-1.5 overflow-hidden">
                         <div 
-                          className="bg-cyan-500 h-full transition-all duration-500 shadow-[0_0_8px_rgba(34,211,238,0.6)]"
+                          className="bg-cyan-400 h-full transition-all duration-500 shadow-[0_0_12px_rgba(34,211,238,0.9)]"
                           style={{ width: `${Math.min(100, (completedCount / totalRoutes) * 100)}%` }}
                         />
                       </div>
