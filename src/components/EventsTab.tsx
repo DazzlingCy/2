@@ -35,7 +35,7 @@ export default function EventsTab() {
             </div>
             <h2 className="text-xl font-bold mb-1 tracking-wide text-amber-100">勋章盲盒抽奖</h2>
             <div className="flex items-center justify-between">
-              <p className="text-amber-200/60 text-xs max-w-[70%]">消耗战力值，抽取绝版城市纪念勋章与实物大奖。</p>
+              <p className="text-amber-200/60 text-xs max-w-[70%]">消耗勋章，解锁全球城市路线，获取专属勋章抽取现金奖励</p>
               <div className="w-8 h-8 rounded-full bg-amber-500/10 backdrop-blur flex items-center justify-center border border-amber-500/30 group-hover:bg-amber-500/30 transition-colors">
                 <ChevronRight size={16} className="text-amber-200" />
               </div>
@@ -60,7 +60,7 @@ export default function EventsTab() {
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent pointer-events-none" />
           
           <div className="absolute top-4 right-4 bg-purple-500/20 backdrop-blur-sm text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full text-purple-200 flex items-center gap-1 shadow-lg border border-purple-500/50">
-            S3 赛季
+            S1 赛季
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -69,7 +69,7 @@ export default function EventsTab() {
             </div>
             <h2 className="text-xl font-bold mb-1 tracking-wide text-purple-100">百人百城计划</h2>
             <div className="flex items-center justify-between">
-              <p className="text-purple-200/60 text-xs max-w-[70%] leading-relaxed">集结100名地球跑者，共同解锁全球100个标志性城市赛道，瓜分百万奖池。</p>
+              <p className="text-purple-200/60 text-xs max-w-[70%] leading-relaxed">集结全球跑者，共同解锁全球100个标志性城市赛道，瓜分百万奖池。</p>
               <div className="w-8 h-8 rounded-full bg-purple-500/10 backdrop-blur flex items-center justify-center border border-purple-500/30 group-hover:bg-purple-500/30 transition-colors">
                 <ChevronRight size={16} className="text-purple-200" />
               </div>
@@ -78,12 +78,12 @@ export default function EventsTab() {
             <div className="w-full h-1 bg-white/5 mt-5 rounded-full overflow-hidden border border-white/5">
                <motion.div 
                  initial={{ width: 0 }} 
-                 animate={{ width: "24%" }} 
+                 animate={{ width: "13.68%" }} 
                  transition={{ duration: 1.5, delay: 0.5 }}
                  className="h-full bg-purple-400" 
                />
             </div>
-            <p className="text-[10px] text-purple-300/50 font-mono mt-1 w-full text-right">已解锁 24/100</p>
+            <p className="text-[10px] text-purple-300/50 font-mono mt-1 w-full text-right">奖金池 1368/10000</p>
           </div>
         </motion.div>
 
