@@ -1286,7 +1286,7 @@ export default function WeekendMedleyView({
                               className="bg-[#26b180] hover:bg-[#1f936a] text-white text-[9.5px] font-black px-2.5 py-1 rounded-md flex items-center gap-0.5 active:scale-95 transition-all"
                             >
                               <Play size={8} className="fill-white" />
-                              <span>踏上</span>
+                              <span>开始</span>
                             </button>
                           )
                         ) : (
@@ -1408,7 +1408,7 @@ export default function WeekendMedleyView({
             ) : (
               <>
                 <Play size={10} className="fill-slate-950" />
-                <span>👟 踏上时空记忆串烧</span>
+                <span>👟 开始时空记忆串烧</span>
               </>
             )}
           </button>
