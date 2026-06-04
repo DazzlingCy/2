@@ -12,11 +12,20 @@ import RunPlaybackView from './components/RunPlaybackView';
 import IntroScreen from './components/IntroScreen';
 import LitRecordsView from './components/LitRecordsView';
 import LeaderboardView from './components/LeaderboardView';
+import WeekendMedleyView from './components/WeekendMedleyView';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [showIntro, setShowIntro] = useState(true);
-  const [fullScreenPage, setFullScreenPage] = useState<{type: 'cityRoutes' | 'routeDetail' | 'runPlayback' | 'litRecords' | 'leaderboard', data?: any} | null>(null);
+  const [fullScreenPage, setFullScreenPage] = useState<{type: 'cityRoutes' | 'routeDetail' | 'runPlayback' | 'litRecords' | 'leaderboard' | 'weekendMedley', data?: any} | null>(null);
+
+  // Weekend City Memory Medley Activity states
+  const [medleySelectedRouteIds, setMedleySelectedRouteIds] = useState<string[]>([]);
+  const [medleyCompletedRouteIds, setMedleyCompletedRouteIds] = useState<string[]>([]);
+  const [medleyLotteryChances, setMedleyLotteryChances] = useState<number>(0);
+  const [medleyDrawHistory, setMedleyDrawHistory] = useState<number[]>([]);
+  const [medleyShareBonusClaimed, setMedleyShareBonusClaimed] = useState<boolean>(false);
+  const [medleyActivityStarted, setMedleyActivityStarted] = useState<boolean>(false);
   const [litCityIds, setLitCityIds] = useState<string[]>(() => {
     // Always start fresh on load
     CITIES.forEach(c => {
@@ -89,7 +98,7 @@ export default function App() {
           setTargetFlight(null);
         }} />;
       case 'events':
-        return <EventsTab />;
+        return <EventsTab onSelectMedley={() => setFullScreenPage({ type: 'weekendMedley' })} />;
       case 'cities':
         return <CitiesTab onCityClick={(city) => setFullScreenPage({ type: 'cityRoutes', data: city })} />;
       case 'profile':
@@ -176,7 +185,13 @@ export default function App() {
             {fullScreenPage.type === 'routeDetail' && (
                <RouteDetailView 
                  {...fullScreenPage.data}
-                 onBack={() => setFullScreenPage({ type: 'cityRoutes', data: fullScreenPage.data.previousCityData })}
+                 onBack={() => {
+                   if (fullScreenPage.data.isActivityRoute) {
+                     setFullScreenPage({ type: 'weekendMedley' });
+                   } else {
+                     setFullScreenPage({ type: 'cityRoutes', data: fullScreenPage.data.previousCityData });
+                   }
+                 }}
                  onStart={() => setFullScreenPage({ type: 'runPlayback', data: fullScreenPage.data })}
                />
             )}
@@ -193,7 +208,21 @@ export default function App() {
                      lightValue: (prev.lightValue || 0) + (stats.calories || Math.floor(stats.distance * 65))
                    }));
 
-                   const { previousCityData, routeIndex } = fullScreenPage.data;
+                   if (fullScreenPage.data.isActivityRoute) {
+                      const activityKey = `${fullScreenPage.data.cityId}-${fullScreenPage.data.routeIndex}`;
+                      setMedleyCompletedRouteIds(prevCompleted => {
+                        if (prevCompleted.includes(activityKey)) return prevCompleted;
+                        const nextCompleted = [...prevCompleted, activityKey];
+                        if (nextCompleted.length === 3) {
+                          setMedleyLotteryChances(prevChances => prevChances + 1);
+                        }
+                        return nextCompleted;
+                      });
+                      setFullScreenPage({ type: 'weekendMedley' });
+                      return;
+                    }
+
+                    const { previousCityData, routeIndex } = fullScreenPage.data;
                    const realCityData = CITIES.find(c => c.id === previousCityData.id) || previousCityData;
                    const currentCompleted = realCityData.completedRouteIndices || [];
                    
@@ -246,6 +275,36 @@ export default function App() {
             )}
             {fullScreenPage.type === 'leaderboard' && (
               <LeaderboardView onBack={() => setFullScreenPage(null)} />
+            )}
+            {fullScreenPage.type === 'weekendMedley' && (
+               <WeekendMedleyView 
+                 onBack={() => setFullScreenPage(null)}
+                 selectedRouteIds={medleySelectedRouteIds}
+                 completedRouteIds={medleyCompletedRouteIds}
+                 lotteryChances={medleyLotteryChances}
+                 drawHistory={medleyDrawHistory}
+                 shareBonusClaimed={medleyShareBonusClaimed}
+                 activityStarted={medleyActivityStarted}
+                 onUpdateState={(state) => {
+                   if (state.selectedRouteIds !== undefined) setMedleySelectedRouteIds(state.selectedRouteIds);
+                   if (state.completedRouteIds !== undefined) setMedleyCompletedRouteIds(state.completedRouteIds);
+                   if (state.lotteryChances !== undefined) setMedleyLotteryChances(state.lotteryChances);
+                   if (state.drawHistory !== undefined) setMedleyDrawHistory(state.drawHistory);
+                   if (state.shareBonusClaimed !== undefined) setMedleyShareBonusClaimed(state.shareBonusClaimed);
+                   if (state.activityStarted !== undefined) setMedleyActivityStarted(state.activityStarted);
+                 }}
+                 onNavigateToRouteDetail={(cityId, routeIndex, image) => {
+                   setFullScreenPage({
+                     type: 'routeDetail',
+                     data: {
+                       cityId,
+                       routeIndex,
+                       image,
+                       isActivityRoute: true
+                     }
+                   });
+                 }}
+               />
             )}
           </motion.div>
         )}

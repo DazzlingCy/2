@@ -70,6 +70,18 @@ export const getRouteData = (cityId: string, routeIndex: number): RouteDetailCon
       { title: '故宫角楼掠影', distance: '4.0', duration: '30:00', calories: '260', rating: '5.0', spots: '神武门 — 角楼 — 景山前街', intro: '沿着紫禁城的红墙奔跑，在角楼的倒影中穿梭，感受数百年的历史厚重与现代活力的碰撞。' },
       { title: '奥森无限绿意', distance: '10.0', duration: '60:00', calories: '650', rating: '4.9', spots: '南园门 — 仰山 — 奥运湖', intro: '北京跑者的圣地，万亩森林氧吧。四季变幻的风景，平坦且专业的塑胶跑道，让你尽情挥洒汗水。' }
     ],
+    '3': [ // 上海
+      { title: '浦江城市记忆', distance: '5.2', duration: '35:00', calories: '340', rating: '4.9', spots: '外滩 — 豫园 — 田子坊', intro: '沿着黄浦江畔，穿梭于海派老建筑与繁华都市之间。在海派石库门中感受上海独有的岁月积淀和城市记忆。' }
+    ],
+    '4': [ // 南京
+      { title: '金陵古都之行', distance: '4.8', duration: '32:00', calories: '310', rating: '4.9', spots: '玄武湖 — 台城明城墙 — 夫子庙', intro: '漫步于明城墙下，眺望玄武湖浩渺水波。在桨声灯影的夫子庙里聆听秦淮河的悠长历史，感受金陵帝王州的壮丽。' }
+    ],
+    '5': [ // 西安
+      { title: '千年长安城墙', distance: '6.0', duration: '40:00', calories: '390', rating: '5.0', spots: '南门永宁门 — 东门长乐门 — 大雁塔', intro: '在十三朝古都的完整城墙上奔跑，还原长安古都神采，感受丝路起点的千年印记。' }
+    ],
+    '6': [ // 东京
+      { title: '浅草古雅旧街', distance: '3.8', duration: '28:00', calories: '250', rating: '4.8', spots: '浅草寺 — 雷门 — 隅田川公园', intro: '穿过挂着巨大红灯笼的雷门，在木制老屋和樱花树下的小巷中奔跑，感受传统时代的雅致魅力。' }
+    ],
     '7': [ // 巴黎
       { title: '塞纳河畔夕阳', distance: '6.5', duration: '45:00', calories: '410', rating: '5.0', spots: '卢浮宫 — 新桥 — 奥赛博物馆', intro: '迎着塞纳河的微风，当夕阳的余晖洒在奥赛博物馆的钟楼上，这是属于巴黎独有的浪漫奔跑。' },
       { title: '铁塔星光', distance: '3.0', duration: '20:00', calories: '180', rating: '4.8', spots: '战神广场 — 埃菲尔铁塔 — 夏佑宫', intro: '在闪烁的铁塔下起跑，穿过战神广场的草坪，感受这座光之城最核心的脉动。' }
@@ -77,6 +89,12 @@ export const getRouteData = (cityId: string, routeIndex: number): RouteDetailCon
     '8': [ // 伦敦
       { title: '西区奇缘声影录', distance: '2.0', duration: '15:36', calories: '169', rating: '5.0', spots: '皇家歌剧院 — 考文特花园 — 沙夫茨伯里大街', intro: '在西区看一场精彩演出，是伦敦人最自然的生活方式。从莱西姆剧院出发，踏入音乐剧心脏-伦敦西区。这条路线，带你沉湎于伦敦的音乐与爱。' },
       { title: '泰晤士河漫步', distance: '5.5', duration: '38:00', calories: '340', rating: '4.8', spots: '大本钟 — 伦敦眼 — 泰特现代美术馆', intro: '沿着泰晤士河南岸，穿梭于古典与现代建筑之间，感受这座城市的厚重与新生。' }
+    ],
+    '9': [ // 纽约
+      { title: '自由岛记忆线', distance: '4.5', duration: '30:00', calories: '290', rating: '4.8', spots: '炮台公园 — 埃利斯岛 — 自由女神像', intro: '迎着哈德逊河呼啸的冷风，遥望自由女神高举的火炬。这条路线记录着移民时代的世纪记忆。' }
+    ],
+    '12': [ // 开罗
+      { title: '尼罗古河文明', distance: '5.0', duration: '38:00', calories: '320', rating: '4.9', spots: '吉萨金字塔群 — 狮身人面像 — 尼罗河谷', intro: '在泛着金光的古老黄沙中起跑，环绕叹为观止的金字塔群，探寻沉睡三千年的圣书象形文字与法老秘密。' }
     ]
   };
 
