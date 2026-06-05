@@ -4,7 +4,7 @@ import {
   ChevronLeft, Award, Gift, Share2, Sparkles, Check, Play, Lock, 
   Info, Landmark, Trophy, Share, Coins, ArrowRight, HelpCircle,
   Plus, Trash2, X, Star, Clock, Compass, MapPin, Download, Send, AlertCircle,
-  Mail, Ticket
+  Mail, Ticket, RefreshCw
 } from 'lucide-react';
 
 export interface MedleyRouteItem {
@@ -20,6 +20,7 @@ export interface MedleyRouteItem {
   distance: string;
   duration: string; // "约 25 分钟"
   rating: number; // e.g. 4.9
+  countryName: string;
 }
 
 export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
@@ -35,7 +36,8 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
     intro: '远离城市喧嚣，深入山林古刹。在古树参天中呼吸新鲜空气，回归宁静。',
     distance: '4.2',
     duration: '约 25 分钟',
-    rating: 4.9
+    rating: 4.9,
+    countryName: '中国'
   },
   {
     id: '2-1',
@@ -49,7 +51,8 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
     intro: '沿着紫禁城的红墙奔跑，在角楼的影子里穿梭，倾听华夏文明的历史足迹。',
     distance: '4.0',
     duration: '约 24 分钟',
-    rating: 4.8
+    rating: 4.8,
+    countryName: '中国'
   },
   {
     id: '3-1',
@@ -63,7 +66,8 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
     intro: '在海派石库门与外滩建筑群中穿梭，感受传统老弄堂与繁荣魔都融合的广度。',
     distance: '5.2',
     duration: '约 31 分钟',
-    rating: 4.7
+    rating: 4.7,
+    countryName: '中国'
   },
   {
     id: '4-1',
@@ -77,7 +81,8 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
     intro: '登上饱经风霜的台城明城墙，在风中聆听金陵帝王州的岁月绝唱。',
     distance: '4.8',
     duration: '约 28 分钟',
-    rating: 4.9
+    rating: 4.9,
+    countryName: '中国'
   },
   {
     id: '5-1',
@@ -91,7 +96,8 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
     intro: '在完整的古老城防防御体系之上，脚踏青砖跑过晨钟暮鼓的一页长安。',
     distance: '6.0',
     duration: '约 36 分钟',
-    rating: 4.8
+    rating: 4.8,
+    countryName: '中国'
   },
   {
     id: '6-1',
@@ -105,7 +111,8 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
     intro: '跨过高悬的标志红灯笼，跑过错落有致的长街、手工作坊与江户落日。',
     distance: '3.8',
     duration: '约 22 分钟',
-    rating: 4.7
+    rating: 4.7,
+    countryName: '日本'
   },
   {
     id: '7-1',
@@ -119,7 +126,8 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
     intro: '踩着塞纳河畔微波在奥赛和新桥之间奔跑。当金光倾泻，浪漫不言而喻。',
     distance: '6.5',
     duration: '约 39 分钟',
-    rating: 4.9
+    rating: 4.9,
+    countryName: '法国'
   },
   {
     id: '8-1',
@@ -133,7 +141,8 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
     intro: '探寻西区音乐和戏剧的活力中枢，在考文特花园古典回响中沉浸前行。',
     distance: '2.0',
     duration: '约 12 分钟',
-    rating: 4.6
+    rating: 4.6,
+    countryName: '英国'
   },
   {
     id: '9-1',
@@ -147,7 +156,8 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
     intro: '眺望曼哈顿摩天森林和哈德逊河港，感受黄金移民时代不朽的时代脉搏。',
     distance: '4.5',
     duration: '约 27 分钟',
-    rating: 4.8
+    rating: 4.8,
+    countryName: '美国'
   },
   {
     id: '12-1',
@@ -161,7 +171,83 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
     intro: '沐浴在古老的沙漠黄昏中，见证巍峨金字塔与浩荡尼罗河如何穿越几千载风尘。',
     distance: '5.0',
     duration: '约 30 分钟',
-    rating: 4.9
+    rating: 4.9,
+    countryName: '埃及'
+  },
+  {
+    id: '13-1',
+    cityId: '13',
+    routeIndex: 1,
+    cityName: '曼谷',
+    routeName: '昭批耶河畔余晖',
+    title: '曼谷·昭批耶河畔余晖',
+    image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=500&q=80',
+    spots: '郑王庙 — 卧佛寺 — 湄南河前街',
+    intro: '骑行或慢跑在金碧辉煌的佛塔倒影中，倾听湄南河的古老低语。',
+    distance: '3.6',
+    duration: '约 21 分钟',
+    rating: 4.8,
+    countryName: '泰国'
+  },
+  {
+    id: '14-1',
+    cityId: '14',
+    routeIndex: 1,
+    cityName: '成都',
+    routeName: '宽窄人文记忆',
+    title: '成都·宽窄人文记忆',
+    image: 'https://images.unsplash.com/photo-1549693578-d683be217e58?auto=format&fit=crop&w=500&q=80',
+    spots: '宽窄巷子 — 琴台路 — 人民公园茶社',
+    intro: '在竹椅和盖碗茶香里穿梭青砖黛瓦，体验川西独具一格的小市民慢跑生活。',
+    distance: '4.1',
+    duration: '约 25 分钟',
+    rating: 4.9,
+    countryName: '中国'
+  },
+  {
+    id: '15-1',
+    cityId: '15',
+    routeIndex: 1,
+    cityName: '悉尼',
+    routeName: '海港桥海岸漫步',
+    title: '悉尼·海港大桥海岸漫步',
+    image: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=500&q=80',
+    spots: '环形码头 — 麦考利夫人座椅 — 悉尼歌剧院观景台',
+    intro: '沐浴在海风拂面与白蓬建筑的交织余音中，跑过无边蔚蓝的海岸轮廓。',
+    distance: '5.5',
+    duration: '约 33 分钟',
+    rating: 4.9,
+    countryName: '澳大利亚'
+  },
+  {
+    id: '16-1',
+    cityId: '16',
+    routeIndex: 1,
+    cityName: '柏林',
+    routeName: '勃兰登堡门时空',
+    title: '柏林·勃兰登堡门时空印记',
+    image: 'https://images.unsplash.com/photo-1599946347371-68eb71b16afc?auto=format&fit=crop&w=500&q=80',
+    spots: '勃兰登堡门 — 菩提树下大街 — 柏林墙遗址',
+    intro: '重温横跨几个时代的厚重篇幅，在工业与艺术的融合底座跑过历史余温。',
+    distance: '4.6',
+    duration: '约 28 分钟',
+    rating: 4.7,
+    countryName: '德国'
+  },
+  {
+    id: '17-1',
+    cityId: '17',
+    routeIndex: 1,
+    cityName: '里约',
+    routeName: '基督山阳光海岸',
+    title: '里约·基督山阳光海岸线',
+    image: 'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=500&q=80',
+    spots: '科帕卡巴纳海滩 — 糖面包山索道口 — 基督神像眺望点',
+    intro: '在热带森林与无边金沙滩交界的狂野阳光下，释放属于南美的奔跑热忱。',
+    distance: '5.0',
+    duration: '约 30 分钟',
+    rating: 4.8,
+    countryName: '巴西'
   }
 ];
 
@@ -198,11 +284,32 @@ export default function WeekendMedleyView({
   onNavigateToRouteDetail
 }: WeekendMedleyViewProps) {
   const [viewMode, setViewMode] = useState<'main' | 'selection' | 'lottery'>('main');
+  const [candidates, setCandidates] = useState<MedleyRouteItem[]>(() => {
+    return MEDLEY_CANDIDATE_ROUTES.slice(0, 5);
+  });
   const [selectError, setSelectError] = useState<string | null>(null);
+  const [poolBalance, setPoolBalance] = useState<number>(() => {
+    const saved = localStorage.getItem('weekend_lottery_pool_balance_v1');
+    if (saved) return parseFloat(saved);
+    const initial = 428.50;
+    localStorage.setItem('weekend_lottery_pool_balance_v1', initial.toString());
+    return initial;
+  });
   const [isDrawing, setIsDrawing] = useState(false);
   const [recentDrawReward, setRecentDrawReward] = useState<number | null>(null);
   const [showDrawModal, setShowDrawModal] = useState(false);
   const lotteryTimeoutRef = useRef<any>(null);
+
+  const handleRefreshCandidates = () => {
+    // Pick 5 unique routes from MEDLEY_CANDIDATE_ROUTES that are NOT in the current candidates list
+    const currentIds = candidates.map(c => c.id);
+    const available = MEDLEY_CANDIDATE_ROUTES.filter(route => !currentIds.includes(route.id));
+    
+    // Shuffle the available ones and get 5 unique routes
+    const shuffled = [...available].sort(() => Math.random() - 0.5);
+    const nextFive = shuffled.slice(0, 5);
+    setCandidates(nextFive);
+  };
 
   useEffect(() => {
     return () => {
@@ -211,6 +318,15 @@ export default function WeekendMedleyView({
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (selectError) {
+      const timer = setTimeout(() => {
+        setSelectError(null);
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [selectError]);
   
   // Poster sharing state
   const [showSharePosterModal, setShowSharePosterModal] = useState(false);
@@ -222,7 +338,6 @@ export default function WeekendMedleyView({
   // 3D Card flip States
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
   const [revealedPrizes, setRevealedPrizes] = useState<number[]>([]);
-  const [showShareSuccessModal, setShowShareSuccessModal] = useState(false);
 
   // Helper check if selected
   const isRouteSelected = (id: string) => selectedRouteIds.includes(id);
@@ -507,11 +622,10 @@ export default function WeekendMedleyView({
 
   const handleSimulateWechatShare = (type: 'friend' | 'moments') => {
     setIsSharingToWechat(true);
-    setShareToastText(type === 'friend' ? '正在模拟拉起微信发送给好友...' : '正在模拟拉起微信朋友圈分享...');
+    setShareToastText(type === 'friend' ? '正在拉起微信发送给好友...' : '正在拉起微信朋友圈分享...');
     
     setTimeout(() => {
       setIsSharingToWechat(false);
-      setShareToastText(type === 'friend' ? '已成功推荐分享给微信好友！' : '朋友圈分享成果喜获群赞！');
       
       // Award extra lottery chance if they haven't claimed share bonus yet
       if (!shareBonusClaimed) {
@@ -519,17 +633,24 @@ export default function WeekendMedleyView({
           shareBonusClaimed: true, 
           lotteryChances: lotteryChances + 1 
         });
-        // Turn off poster menu, turn on share success modal
-        setShowSharePosterModal(false);
-        setShowShareSuccessModal(true);
+        
+        // Use nice elegant toast notification now!
+        setShareToastText('🎉 分享成功！已获得 1 次翻牌机会！');
+        setTimeout(() => setShareToastText(null), 3500);
       } else {
-        setTimeout(() => setShareToastText(null), 3000);
+        setShareToastText('🎉 分享成功！');
+        setTimeout(() => setShareToastText(null), 2500);
       }
-    }, 1500);
+    }, 1200);
   };
 
   const handleFlipCard = (cardIdx: number) => {
     if (lotteryChances <= 0 || isDrawing || flippedIndices.length > 0) return;
+    if (poolBalance <= 0) {
+      setSelectError('很抱歉，本期 500 元现金奖池已被全部抽空啦，请等待下期刷新或点击下方重置测试！');
+      return;
+    }
+    
     setIsDrawing(true);
     setFlippedIndices([cardIdx]);
 
@@ -556,6 +677,12 @@ export default function WeekendMedleyView({
     lotteryTimeoutRef.current = setTimeout(() => {
       setRecentDrawReward(rolledValue);
       setIsDrawing(false);
+      
+      // Deduct from pool balance
+      const newBalance = Math.max(0, poolBalance - rolledValue);
+      setPoolBalance(newBalance);
+      localStorage.setItem('weekend_lottery_pool_balance_v1', newBalance.toString());
+
       onUpdateState({
         lotteryChances: Math.max(0, lotteryChances - 1),
         drawHistory: [rolledValue, ...drawHistory]
@@ -612,7 +739,7 @@ export default function WeekendMedleyView({
               <Sparkles size={15} className="text-[#f5d06e]" />
               自定串烧跑道
             </h2>
-            <p className="text-[10px] text-slate-400 mt-0.5 font-bold">10 选 3 • 点亮秘传里程碑</p>
+            <p className="text-[10px] text-slate-400 mt-0.5 font-bold">自主选 3 条 • 点亮秘传里程碑</p>
           </div>
           
           <div className="w-10" />
@@ -635,31 +762,58 @@ export default function WeekendMedleyView({
             </p>
           </div>
 
-          {/* Error Tips Callout */}
-          {selectError && (
-            <motion.div 
-              initial={{ opacity: 0, y: -5 }} 
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-red-950/40 border border-red-500/30 text-red-200 text-[11px] px-3.5 py-2.5 rounded-xl font-medium leading-relaxed text-left"
-            >
-              ⚠️ {selectError}
-            </motion.div>
-          )}
-
           {/* Current Selection Progress Status */}
-          <div className="bg-slate-900/40 border border-white/5 p-3 rounded-2xl flex items-center justify-between text-left">
-            <div>
-              <span className="text-[11px] text-slate-400 font-bold block">当前已挑选跑道</span>
-              <span className="text-[10px] text-slate-500 font-semibold mt-0.5 block">选择恰好 3 条开启时空连携</span>
+          <div className="bg-slate-900/40 border border-white/5 p-3 rounded-2xl text-left">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-[11px] text-slate-400 font-bold block">当前已挑选跑道</span>
+              </div>
+              <span className="font-mono text-sm font-black bg-cyan-950/80 text-cyan-400 px-3.5 py-1 rounded-xl border border-cyan-500/35 shrink-0">
+                {selectedRouteIds.length} / 3
+              </span>
             </div>
-            <span className="font-mono text-sm font-black bg-cyan-950/80 text-cyan-400 px-3.5 py-1 rounded-xl border border-cyan-500/35">
-              {selectedRouteIds.length} / 3
-            </span>
+            
+            {/* Displaying actually selected items clearly so they can switch batches without confusion! */}
+            {selectedRouteIds.length > 0 ? (
+              <div className="mt-2.5 pt-2.5 border-t border-white/5 flex flex-row overflow-x-auto whitespace-nowrap gap-1.5 pb-1 select-none overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {selectedItems.map((item) => (
+                  <span 
+                    key={item.id} 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleRoute(item);
+                    }}
+                    className="text-[9.5px] font-black px-2.5 py-1 rounded-lg bg-cyan-950/50 hover:bg-red-950/30 border border-cyan-500/25 hover:border-red-500/30 text-cyan-300 hover:text-red-300 transition-all flex items-center gap-1 cursor-pointer shrink-0"
+                    title="点击可移除选择"
+                  >
+                    📍 {item.cityName} · {item.routeName}
+                    <X size={9} className="opacity-60" />
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-2.5 pt-2.5 border-t border-white/5 text-[10px] text-slate-500/90 border-dashed select-none leading-normal h-[34px] flex flex-col justify-center font-bold">
+                <span className="opacity-75">暂未选定任何跑道</span>
+                <span className="opacity-50 text-[9px] mt-0.5">（请点击下方候选列表，任选 3 条即可开启连携）</span>
+              </div>
+            )}
+          </div>
+
+          {/* Candidates Shuffling Header Row */}
+          <div className="flex items-center justify-between px-1 mt-2">
+            <span className="text-[11px] text-slate-400 font-bold">候选跑道（每批 5 条）</span>
+            <button
+              onClick={handleRefreshCandidates}
+              className="bg-cyan-500/10 hover:bg-cyan-500/20 active:scale-95 border border-cyan-500/25 text-cyan-400 text-[10px] font-black px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all shadow-md"
+            >
+              <RefreshCw size={11} className="text-cyan-400 animate-pulse" />
+              <span>换一批</span>
+            </button>
           </div>
 
           {/* Beautiful Route List Column */}
-          <div className="space-y-3.5">
-            {MEDLEY_CANDIDATE_ROUTES.map((route) => {
+          <div className="space-y-1.5 font-sans">
+            {candidates.map((route) => {
               const isChecked = isRouteSelected(route.id);
               
               return (
@@ -667,94 +821,32 @@ export default function WeekendMedleyView({
                   key={route.id}
                   id={`route-card-${route.id}`}
                   onClick={() => handleToggleRoute(route)}
-                  className={`group rounded-2xl border transition-all overflow-hidden text-left flex flex-col cursor-pointer active:scale-[0.99] duration-300 ${
+                  className={`group rounded-xl border px-3 py-2 transition-all flex items-center justify-between cursor-pointer active:scale-[0.99] duration-200 ${
                     isChecked 
-                      ? 'bg-[#0a1829] border-cyan-500/60 shadow-[0_4px_20px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/20' 
+                      ? 'bg-[#0a1829] border-cyan-500/60 shadow-[0_2px_12px_rgba(6,182,212,0.12)] ring-1 ring-cyan-500/10' 
                       : 'bg-[#070c14] border-white/5 hover:border-white/10 hover:bg-[#0b1321]'
                   }`}
                 >
-                  
-                  {/* Top: Premium Landscape Image Cover and Tags */}
-                  <div className="relative w-full h-36 overflow-hidden">
-                    <img 
-                      src={route.image} 
-                      alt={route.routeName} 
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      referrerPolicy="no-referrer"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = "https://images.unsplash.com/photo-1506501139174-099022df5260?auto=format&fit=crop&w=500&q=80";
-                      }}
-                    />
-                    {/* Vignette Backing Gradient to guarantee legibility */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {/* Check mark badge */}
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all shrink-0 ${
+                      isChecked 
+                        ? 'bg-cyan-500 border-cyan-400 text-slate-950' 
+                        : 'bg-black/40 border-slate-700 text-slate-500'
+                    }`}>
+                      {isChecked ? <Check size={11} className="stroke-[3.5] text-[#03060a]" /> : <Plus size={11} />}
+                    </div>
                     
-                    {/* Top tags on cover */}
-                    <div className="absolute top-3 inset-x-3 flex justify-between items-center pointer-events-none">
-                      <span className="bg-slate-950/70 border border-white/15 text-slate-100 text-[10px] font-black px-2 py-0.5 rounded-md backdrop-blur-md">
-                        📍 {route.cityName}
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      {/* Country & City Badge */}
+                      <span className="shrink-0 bg-slate-950/80 border border-white/10 text-slate-300 text-[10px] font-black px-2 py-0.5 rounded backdrop-blur-md">
+                        📍 {route.countryName} · {route.cityName}
                       </span>
-                      
-                      {/* Check mark badge */}
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center border transition-all ${
-                        isChecked 
-                          ? 'bg-cyan-500 border-cyan-400 text-slate-950' 
-                          : 'bg-black/40 border-slate-500 text-slate-400'
-                      }`}>
-                        {isChecked ? <Check size={14} className="stroke-[3]" /> : <Plus size={13} />}
-                      </div>
+                      {/* Route Name */}
+                      <span className="text-xs font-bold text-slate-200 truncate">
+                        {route.routeName}
+                      </span>
                     </div>
-
-                    {/* Bottom overlay text on cover */}
-                    <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end">
-                      <h3 className="text-sm font-black text-white filter drop-shadow">
-                        {route.title}
-                      </h3>
-                      
-                      {/* Star Rating Badge overlaid on image cover bottom corner */}
-                      <div className="bg-amber-500/90 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-md">
-                        <Star size={10} className="fill-slate-950 stroke-none" />
-                        <span>{route.rating.toFixed(1)}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom details row */}
-                  <div className="p-3.5 space-y-2.5">
-                    
-                    {/* Description Intro */}
-                    <p className="text-[11px] text-slate-300 font-semibold leading-relaxed line-clamp-2">
-                      {route.intro}
-                    </p>
-
-                    {/* Scenic Spots details row */}
-                    <div className="bg-black/30 p-2 rounded-xl border border-white/5 flex gap-1.5 items-start text-[10px] text-slate-400 font-bold leading-normal">
-                      <span className="shrink-0 text-cyan-400">🏞️ 核心:</span>
-                      <span className="truncate">{route.spots}</span>
-                    </div>
-
-                    {/* Multi Badges Row: Distance, Hours, Rating */}
-                    <div className="flex gap-2 text-[10px] font-bold">
-                      
-                      {/* Distance */}
-                      <div className="bg-slate-950 px-2.5 py-1 rounded-lg border border-white/5 text-slate-300 flex items-center gap-1 font-mono">
-                        <Compass size={11} className="text-cyan-400" />
-                        <span>{route.distance} km</span>
-                      </div>
-
-                      {/* Duration (时长) */}
-                      <div className="bg-[#05060b] px-2.5 py-1 rounded-lg border border-white/5 text-cyan-300 flex items-center gap-1 font-semibold">
-                        <Clock size={11} className="text-cyan-400" />
-                        <span>{route.duration}</span>
-                      </div>
-
-                      {/* Rating Label */}
-                      <div className="bg-[#05060b] px-2.5 py-1 rounded-lg border border-white/5 text-amber-400 flex items-center gap-1 shrink-0 ml-auto select-none font-semibold">
-                        <span>⭐⭐⭐⭐⭐</span>
-                        <span className="text-[8.5px] text-slate-500 font-black">精品级</span>
-                      </div>
-                    </div>
-
                   </div>
                 </div>
               );
@@ -764,7 +856,7 @@ export default function WeekendMedleyView({
         </div>
 
         {/* Premium Keep-in-Place Bottom Actions */}
-        <div className="absolute bottom-0 left-0 right-0 z-40 bg-black/90 backdrop-blur-md pt-3.5 pb-safe px-4 border-t border-white/5 flex gap-3">
+        <div className="absolute bottom-0 left-0 right-0 z-40 bg-black/90 backdrop-blur-md pt-3 pb-6 px-4 border-t border-white/5 flex gap-3">
           
           <button
             onClick={() => {
@@ -796,6 +888,22 @@ export default function WeekendMedleyView({
             <Check size={14} className="stroke-[3]" />
           </button>
         </div>
+
+        {/* Floating Toast Alert notification for Selection errors */}
+        <AnimatePresence>
+          {selectError && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 15, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="absolute bottom-28 left-6 right-6 z-50 bg-[#16060c]/95 border border-red-500/50 text-red-200 text-xs font-black px-4 py-3 rounded-xl text-center flex items-center justify-center gap-2 shadow-[0_8px_30px_rgb(0,0,0,0.8)] backdrop-blur-md"
+            >
+              <AlertCircle size={14} className="text-red-400 shrink-0 animate-bounce" />
+              <span className="leading-snug text-left">{selectError}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </div>
     );
@@ -837,22 +945,7 @@ export default function WeekendMedleyView({
             </p>
           </div>
           
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* Quick debug trigger to add 1 chance instantly for reviewer validation */}
-            <button
-              onClick={() => {
-                onUpdateState({ lotteryChances: lotteryChances + 1 });
-              }}
-              className="px-2 py-1.5 bg-yellow-400/10 hover:bg-yellow-400/20 text-[#f5cb4e] border border-[#ffe082]/15 rounded-lg text-[9px] font-black active:scale-95 transition-all"
-              title="审核调试工具：一键充能 +1 抽奖机会"
-            >
-              +1 调试券
-            </button>
-            <div className="px-3 py-1.5 rounded-xl bg-[#1c1c24] border border-zinc-800/80 text-[#ffe285] font-mono font-black text-xs flex items-center gap-1 shadow-sm">
-              <span>🎟️</span>
-              <span>{lotteryChances}</span>
-            </div>
-          </div>
+          <div className="w-10" />
         </div>
 
         {/* Scrollable Sub-screen Inner */}
@@ -861,11 +954,20 @@ export default function WeekendMedleyView({
           {/* Main Card Container */}
           <div className="w-full bg-[#12131a] rounded-3xl p-5 border border-zinc-850 shadow-[0_12px_28px_rgba(0,0,0,0.55)] relative overflow-hidden text-center">
             
-            {/* ✨ 周末现金奖池 pill centered */}
-            <div className="flex justify-center mb-6">
-              <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[#ffe082]/15 bg-[#1a1710] text-[#f5cb4e] text-xs font-black tracking-wider shadow-[0_2px_10px_rgba(245,203,78,0.05)]">
-                <Sparkles size={11} className="text-[#f5cb4e]" />
-                <span>周末现金奖池</span>
+            {/* Sleek, simplified cash pool status row */}
+            <div className="flex flex-col items-center mb-6 space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#ffe082]/15 bg-[#1a1710]/80 text-[#f5cb4e] text-[10px] font-black tracking-wider uppercase">
+                <Sparkles size={10} className="text-[#f5cb4e] animate-pulse" />
+                <span>限时现金奖池 ¥500 (抽空即止)</span>
+              </div>
+              
+              <div className="w-full max-w-[240px] flex justify-between items-center text-[10px] text-zinc-400 bg-black/20 border border-white/5 rounded-xl px-3.5 py-2 font-bold shadow-inner">
+                <span className="flex items-center gap-1 text-zinc-500">
+                  当前剩余:
+                  <span className="text-[#ffe285] font-black font-mono text-[11px]">¥{poolBalance.toFixed(2)}</span>
+                </span>
+                <div className="h-3 w-px bg-zinc-800" />
+                <span>已瓜分 {((500 - poolBalance) / 500 * 100).toFixed(1)}%</span>
               </div>
             </div>
 
@@ -886,7 +988,7 @@ export default function WeekendMedleyView({
                         handleFlipCard(idx);
                       }
                     }}
-                    className={`relative h-44 rounded-2xl cursor-pointer select-none transition-all duration-500 [perspective:1000px] ${
+                    className={`relative h-40 rounded-2xl cursor-pointer select-none transition-all duration-500 [perspective:1000px] ${
                       isThisChosen
                         ? 'ring-2 ring-yellow-500 shadow-[0_0_18px_rgba(234,179,8,0.3)]'
                         : isThisFlipped
@@ -916,15 +1018,15 @@ export default function WeekendMedleyView({
 
                         {/* Mid envelope circle */}
                         <div className="flex flex-col items-center justify-center">
-                          <div className="w-12 h-12 rounded-full border border-[#ffe082]/20 bg-[#252015] flex items-center justify-center mb-2.5 shadow-[0_4px_10px_rgba(255,224,130,0.05)]">
-                            <Mail size={16} className="text-[#f5cb4e]" />
+                          <div className="w-10 h-10 rounded-full border border-[#ffe082]/20 bg-[#252015] flex items-center justify-center mb-2 shadow-[0_4px_10px_rgba(255,224,130,0.05)]">
+                            <Mail size={14} className="text-[#f5cb4e]" />
                           </div>
                           
-                          <span className="text-[12px] font-black text-white tracking-widest block leading-none">现金卡</span>
+                          <span className="text-[11px] font-black text-white tracking-widest block leading-none">现金卡</span>
                         </div>
 
                         {/* Bottom Label text */}
-                        <span className="text-[9px] text-[#4d94ff] font-bold leading-none block text-center mt-1">
+                        <span className="text-[9px] text-[#4d94ff] font-bold leading-none block text-center">
                           点击翻开
                         </span>
                       </div>
@@ -940,7 +1042,7 @@ export default function WeekendMedleyView({
                       >
                         {/* Tags Top */}
                         <div className="flex justify-between items-center w-full">
-                          <span className={`text-[10px] font-black ${isThisChosen ? 'text-[#ffe082]' : 'text-zinc-500'}`}>WIN</span>
+                          <span className={`text-[9.5px] font-black ${isThisChosen ? 'text-[#ffe082]' : 'text-zinc-500'}`}>WIN</span>
                           {isThisChosen ? (
                             <Sparkles size={10} className="text-[#ffe082] animate-pulse" />
                           ) : (
@@ -950,7 +1052,7 @@ export default function WeekendMedleyView({
 
                         {/* Center gold/cash reveal */}
                         <div className="flex flex-col items-center justify-center">
-                          <span className="text-[9px] text-zinc-500 font-semibold tracking-widest block leading-none uppercase">微信红包</span>
+                          <span className="text-[8.5px] text-zinc-500 font-bold tracking-widest block leading-none uppercase">微信红包</span>
                           <span className={`text-base font-mono font-black mt-1.5 leading-none ${isThisChosen ? 'text-yellow-400 scale-110' : 'text-zinc-400'}`}>
                             ¥{prizeValue || 0.88}
                           </span>
@@ -971,19 +1073,21 @@ export default function WeekendMedleyView({
             </div>
 
             {/* Below card state text */}
-            <p className="text-[11.5px] text-[#8e8e93] font-medium leading-relaxed px-1.5 mt-5">
-              当前剩余 {lotteryChances} 次机会。选择任意一张现金卡翻开，将消耗 1 次机会抽取现金奖励。
+            <p className="text-[11px] text-[#8e8e93] font-medium leading-relaxed px-1.5 mt-4">
+              当前剩余 <span className="text-white font-black font-mono">{lotteryChances}</span> 次机会，任选一张现金卡翻开。
             </p>
           </div>
 
           {/* 🎁 奖池与概率 */}
-          <div className="w-full bg-[#12131a] rounded-3xl p-5 border border-zinc-850 shadow text-left space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-black text-[#f5cb4e] flex items-center gap-1.5 leading-none">
-                <Gift size={14} className="text-[#f5cb4e]/90" />
+          <div className="w-full bg-[#12131a]/60 rounded-3xl p-4.5 border border-zinc-850/60 shadow text-left space-y-4">
+            <div className="flex justify-between items-center border-b border-white/5 pb-2.5">
+              <span className="text-[11.5px] font-black text-[#f5cb4e] flex items-center gap-1.5 leading-none">
+                <Gift size={13} className="text-[#f5cb4e]/90" />
                 奖池与概率
               </span>
-              <span className="text-[11px] text-[#8e8e93] font-bold">公开展示</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-[#8e8e93] font-bold">公开展示</span>
+              </div>
             </div>
 
             {/* Five column horizontal layout cards */}
@@ -997,12 +1101,12 @@ export default function WeekendMedleyView({
               ].map((p, idx) => (
                 <div 
                   key={idx}
-                  className="bg-[#1c1913]/40 border border-[#ffe082]/10 rounded-2xl py-3 px-1 text-center flex flex-col justify-between h-14"
+                  className="bg-black/35 border border-[#ffe082]/5 rounded-xl py-2 px-1 text-center flex flex-col justify-between h-12"
                 >
-                  <span className="text-[12px] font-mono font-black text-[#ffe082] block tracking-tighter leading-none">
+                  <span className="text-[11px] font-mono font-black text-[#ffe082] block tracking-tighter leading-none">
                     ¥{p.val}
                   </span>
-                  <span className="text-[9px] text-[#8e8e93] font-semibold block leading-none">
+                  <span className="text-[8.5px] text-[#8e8e93] font-bold block leading-none">
                     {p.rate}
                   </span>
                 </div>
@@ -1011,13 +1115,13 @@ export default function WeekendMedleyView({
           </div>
 
           {/* ⏱️ 开奖记录 */}
-          <div className="w-full bg-[#12131a] rounded-3xl p-5 border border-zinc-850 shadow text-left space-y-3.5">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-black text-slate-200 flex items-center gap-1.5 leading-none">
-                <Clock size={14} className="text-zinc-400" />
+          <div className="w-full bg-[#12131a]/60 rounded-3xl p-4.5 border border-zinc-850/60 shadow text-left space-y-3.5">
+            <div className="flex justify-between items-center border-b border-white/5 pb-2.5">
+              <span className="text-[11.5px] font-black text-slate-200 flex items-center gap-1.5 leading-none">
+                <Clock size={13} className="text-zinc-400" />
                 开奖记录
               </span>
-              <span className="text-[11px] text-[#8e8e93] font-bold leading-none">{drawHistory.length} 次</span>
+              <span className="text-[10px] text-[#8e8e93] font-semibold leading-none">{drawHistory.length} 次</span>
             </div>
 
             {drawHistory.length > 0 ? (
@@ -1048,10 +1152,10 @@ export default function WeekendMedleyView({
         <div className="absolute bottom-0 inset-x-0 z-40 bg-black/95 backdrop-blur-md pt-3.5 pb-safe px-4 border-t border-zinc-900/60 flex flex-col items-center justify-center space-y-2.5 shrink-0">
           {lotteryChances > 0 ? (
             <div
-              className="w-full py-4 rounded-2xl bg-[#1c1d27]/75 border border-zinc-800 text-zinc-300 font-extrabold text-sm tracking-wide flex items-center justify-center gap-2 select-none"
+              className="w-full py-4 rounded-2xl bg-[#1c1d27]/75 border border-zinc-850 text-[#fff] font-extrabold text-sm tracking-wide flex items-center justify-center gap-2 select-none shadow-[0_4px_12px_rgba(0,0,0,0.3)] animate-pulse"
             >
-              <Ticket size={14} className="text-zinc-400" />
-              <span>请选择一张现金卡</span>
+              <Ticket size={14} className="text-[#ffe082]" fill="currentColor" />
+              <span>剩余抽奖机会: <span className="text-[#ffe082] font-black font-mono text-base px-0.5">{lotteryChances}</span> 次，请选择现金卡</span>
             </div>
           ) : (
             <div
@@ -1161,9 +1265,9 @@ export default function WeekendMedleyView({
 
           {/* Hero Content Block */}
           <div className="relative z-20 px-5 pt-12 pb-6 text-left">
-            {/* Theme category tag */}
+            {/* Unified category tag */}
             <div className="inline-flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-500/25 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase">
-              <span>🏛️ 历史文化主题</span>
+              <span>👟 城市串烧活动</span>
             </div>
 
             {/* Huge bold display title */}
@@ -1318,6 +1422,17 @@ export default function WeekendMedleyView({
             )}
           </div>
 
+          {/* If all completed, show a success banner directly on home-screen too */}
+          {isMedleyAllCompleted && (
+            <div className="p-4 rounded-2xl bg-gradient-to-tr from-[#1b1c2b] to-[#0d0d17] border border-[#f5cb4e]/30 text-center shadow-lg">
+              <h4 className="text-xs font-black text-[#f5cb4e] flex items-center justify-center gap-1.5">
+                <Trophy size={14} className="text-[#f5cb4e] fill-amber-500/10" />
+                周末城市记忆串烧已完美完成！
+              </h4>
+              <p className="text-[10px] text-slate-300 mt-1.5 leading-relaxed font-bold">恭喜探索家！所有串烧印章均已集齐点亮！请点击下方“前往领奖”跳转单独的时空翻牌界面抽取现金大礼吧！ 🏮</p>
+            </div>
+          )}
+
           {/* ACTIVITY RULES CARD BLOCK */}
           <div className="bg-[#080d15] rounded-2xl p-4 border border-white/5 text-left space-y-3 shadow-lg">
             <span className="text-xs font-black text-slate-200 flex items-center gap-1.5">
@@ -1345,17 +1460,6 @@ export default function WeekendMedleyView({
               ⏳ 请在跑台上跑完上述 3 条选择的记忆路线，点亮全部 3 段华夏遗珍，即可去翻开微信现金秘宝！
             </div>
           )}
-
-          {/* If all completed, show a success banner directly on home-screen too */}
-          {isMedleyAllCompleted && (
-            <div className="p-4 rounded-2xl bg-gradient-to-tr from-[#1b1c2b] to-[#0d0d17] border border-[#f5cb4e]/30 text-center shadow-lg">
-              <h4 className="text-xs font-black text-[#f5cb4e] flex items-center justify-center gap-1.5">
-                <Trophy size={14} className="text-[#f5cb4e] fill-amber-500/10" />
-                周末城市记忆串烧已完美完成！
-              </h4>
-              <p className="text-[10px] text-slate-300 mt-1.5">恭喜探索家！所有串烧印章均已集齐点亮！请点击下方“前往领奖”跳转单独的时空翻牌界面抽取现金大礼吧！ 🏮</p>
-            </div>
-          )}
         </div>
 
       </div>
@@ -1367,7 +1471,7 @@ export default function WeekendMedleyView({
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
-            className="absolute bottom-24 left-4 right-4 z-50 bg-[#0d1527] border border-cyan-500/50 text-cyan-200 text-[10.5px] font-bold px-3 py-2.5 rounded-lg text-center flex items-center justify-center gap-2 shadow-2xl backdrop-blur-md"
+            className="absolute bottom-24 left-4 right-4 z-[110] bg-[#0d1527] border border-cyan-500/50 text-cyan-200 text-[10.5px] font-bold px-3 py-2.5 rounded-lg text-center flex items-center justify-center gap-2 shadow-2xl backdrop-blur-md"
           >
             <Sparkles size={13} className="text-cyan-400 animate-spin" />
             <span>{shareToastText}</span>
@@ -1454,44 +1558,6 @@ export default function WeekendMedleyView({
           </span>
         </div>
       </div>
-
-      {/* SHARE SUCCESS FEEDBACK MODAL OVERLAY */}
-      <AnimatePresence>
-        {showShareSuccessModal && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6"
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 15 }}
-              animate={{ scale: 1, y: 0 }}
-              className="bg-[#0b121e] rounded-3xl p-6 w-full max-w-xs border border-cyan-500/30 text-center relative flex flex-col items-center shadow-2xl"
-            >
-              <div className="w-12 h-12 bg-cyan-950 text-cyan-400 rounded-full flex items-center justify-center mb-3 border border-cyan-500/30 shadow-inner">
-                <Share className="stroke-[2.5]" size={22} />
-              </div>
-              <h3 className="text-sm font-black text-slate-100">结业海报已成功分享</h3>
-              <p className="text-xs text-slate-400 mt-1 font-bold">SHARE COMPLETED</p>
-
-              <p className="text-[11px] text-slate-400 leading-relaxed mt-4 mb-5 font-bold">
-                您的周末串烧成果海报已在微信成功传达！已额外为您获赠发卡站 <strong className="text-yellow-400">1 次开大奖红包机会</strong>。
-              </p>
-
-              <button
-                onClick={() => {
-                  setShowShareSuccessModal(false);
-                  setViewMode('lottery');
-                }}
-                className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-slate-50 font-black rounded-xl text-xs transition-all border border-purple-500/40"
-              >
-                立即前往时空翻牌抽奖 ✨
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* EXQUISITE SHARE POSTER MODAL (WITH CODE CANVAS SUPPORT AND RAW PREVIEWS) */}
       <AnimatePresence>
@@ -1664,6 +1730,15 @@ export default function WeekendMedleyView({
               transition={{ type: 'spring', damping: 18 }}
               className="bg-[#0f101a] border border-[#f5cb4e]/30 rounded-3xl p-6 w-full max-w-xs shadow-[0_0_50px_rgba(245,203,78,0.15)] text-center relative flex flex-col items-center"
             >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowCompletionModal(false)}
+                className="absolute top-4 right-4 z-50 text-slate-400 hover:text-white p-1 rounded-full hover:bg-white/5 active:scale-90 transition-all cursor-pointer"
+                aria-label="关闭"
+              >
+                <X size={16} className="stroke-[2.5]" />
+              </button>
+
               <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-3xl opacity-25">
                 <span className="absolute top-4 left-6 text-yellow-300 transform -rotate-12 select-none">✨</span>
                 <span className="absolute top-1/2 right-4 text-[#2ebd90] text-xl transform rotate-12 select-none">✨</span>
@@ -1683,14 +1758,14 @@ export default function WeekendMedleyView({
                   恭喜探索家 <strong className="text-yellow-400">木小六</strong>！
                 </p>
                 <p className="text-[11px] text-slate-300 leading-relaxed font-semibold">
-                  您在这个周末自选并挑战的全部完成点亮了 3 / 3 条华夏历史文化路线！
+                  您已圆满完成本次周末挑战！
                 </p>
                 <p className="text-[11px] text-slate-400 leading-relaxed font-bold">
-                  🏅 您的专属汗水结业荣誉勋章已淬炼铸造，1次大奖独立页翻卡机会已为您解锁，快去夺取现金大红包吧！
+                  🏅 专属荣誉勋章已淬炼完成，1次翻卡取现机会已帮您解锁，快去夺取现金红包吧！
                 </p>
               </div>
 
-              <div className="w-full space-y-2.5">
+              <div className="w-full">
                 {/* 🧧 Primary Action Button: Go to lottery */}
                 <button
                   onClick={() => {
@@ -1701,14 +1776,6 @@ export default function WeekendMedleyView({
                 >
                   <Gift size={14} className="stroke-[2.5]" />
                   <span>🎁 立即前往翻卡领奖</span>
-                </button>
-
-                {/* Secondary Button: dismiss and stay on main screen */}
-                <button
-                  onClick={() => setShowCompletionModal(false)}
-                  className="w-full py-2.5 bg-slate-900/80 hover:bg-slate-800 border border-white/5 text-[10.5px] text-slate-400 font-bold rounded-xl transition-colors"
-                >
-                  返回主页查看
                 </button>
               </div>
             </motion.div>
