@@ -44,7 +44,7 @@ export default function EventsTab({ onSelectMedley }: EventsTabProps) {
             </h2>
             <div className="flex items-center justify-between">
               <p className="text-emerald-200/60 text-[11px] max-w-[65%] leading-relaxed line-clamp-2">
-                连携3个城市经典记忆路线，完成后得微信红包抽奖！
+                连携3个城市经典记忆路线，完成后可抽取现金奖励！
               </p>
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
@@ -54,6 +54,7 @@ export default function EventsTab({ onSelectMedley }: EventsTabProps) {
                   }}
                   className="px-2.5 py-1 rounded-full bg-emerald-500/20 hover:bg-emerald-500/25 border border-emerald-500/40 text-[#a2dfcb] text-[10px] font-semibold flex items-center gap-1.5 transition-colors shadow-lg active:scale-95 cursor-default"
                 >
+                  <MessageSquare size={11} />
                   讨论
                 </button>
                 <div className="w-7 h-7 rounded-full bg-emerald-500/10 backdrop-blur flex items-center justify-center border border-emerald-500/30 group-hover:bg-emerald-500/30 transition-colors">

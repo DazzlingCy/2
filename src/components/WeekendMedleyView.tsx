@@ -1149,7 +1149,7 @@ export default function WeekendMedleyView({
         </div>
 
         {/* Sticky Fixed Bottom area matching mockup */}
-        <div className="absolute bottom-0 inset-x-0 z-40 bg-black/95 backdrop-blur-md pt-3.5 pb-safe px-4 border-t border-zinc-900/60 flex flex-col items-center justify-center space-y-2.5 shrink-0">
+        <div className="absolute bottom-0 inset-x-0 z-40 bg-black/95 backdrop-blur-md pt-3.5 pb-5 pb-safe px-4 border-t border-zinc-900/60 flex flex-col items-center justify-center space-y-2.5 shrink-0">
           {lotteryChances > 0 ? (
             <div
               className="w-full py-4 rounded-2xl bg-[#1c1d27]/75 border border-zinc-850 text-[#fff] font-extrabold text-sm tracking-wide flex items-center justify-center gap-2 select-none shadow-[0_4px_12px_rgba(0,0,0,0.3)] animate-pulse"
@@ -1480,7 +1480,7 @@ export default function WeekendMedleyView({
       </AnimatePresence>
 
       {/* 4. KEEP-IN-PLACE PREMIUM FLOATING BOTTOM DOCK ACTION BAR */}
-      <div className="absolute bottom-0 left-0 right-0 z-40 bg-black/90 backdrop-blur-md pt-3.5 pb-safe px-4 border-t border-white/5 flex flex-col gap-2.5">
+      <div className="absolute bottom-0 left-0 right-0 z-40 bg-black/90 backdrop-blur-md pt-3.5 pb-5 pb-safe px-4 border-t border-white/5 flex flex-col gap-2.5">
         <div className="flex gap-3">
           
           {/* Main Action Button */}
@@ -1548,15 +1548,7 @@ export default function WeekendMedleyView({
           </button>
         </div>
 
-        {/* Footer Sub-indicator Label Row */}
-        <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold px-1.5 pb-2 select-none">
-          <span>
-            {shareBonusClaimed ? '✅ 分享奖励：已获得+1抽奖机会' : '🎁 转发串烧荣誉海报赠送 1 次翻卡机会'}
-          </span>
-          <span>
-            开奖：{drawHistory.length} 次
-          </span>
-        </div>
+
       </div>
 
       {/* EXQUISITE SHARE POSTER MODAL (WITH CODE CANVAS SUPPORT AND RAW PREVIEWS) */}
