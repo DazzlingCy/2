@@ -1370,10 +1370,6 @@ export default function WeekendMedleyView({
                   <span className="text-[11px] text-yellow-200 block mt-2.5 font-bold">现金已转入红包余额</span>
                 </div>
 
-                <p className="text-[10.5px] text-yellow-100/70 leading-relaxed max-w-[200px] font-bold mb-6">
-                  周末限定汗水结晶！红包款数额已模拟直汇您登录微信号绑定零钱。
-                </p>
-
                 <button
                   onClick={handleCloseDrawModal}
                   className="w-full py-3 bg-gradient-to-r from-yellow-300 to-amber-400 hover:from-yellow-200 hover:to-amber-300 text-slate-900 font-extrabold rounded-xl text-xs transition-colors tracking-widest uppercase shadow-md"
