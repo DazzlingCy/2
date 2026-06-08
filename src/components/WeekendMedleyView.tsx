@@ -1327,9 +1327,6 @@ export default function WeekendMedleyView({
               <span className="text-xs font-black text-slate-200 flex items-center gap-1.5">
                 <span className="text-base select-none leading-none">🗺️</span> 我的路线串烧
               </span>
-              <span className="text-[9.5px] text-slate-400 font-bold bg-[#142334]/50 border border-cyan-500/15 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                <span>🗺️ 自定 10 选 3</span>
-              </span>
             </div>
 
             {/* Dashed placeholder container if unselected */}
