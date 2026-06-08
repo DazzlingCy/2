@@ -804,6 +804,175 @@ export default function WeekendMedleyView({
     }
   };
 
+  const renderSharePosterModal = () => {
+    return (
+      <AnimatePresence>
+        {showSharePosterModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4"
+          >
+            {/* Header section of poster modal */}
+            <div className="flex justify-between items-center py-2 border-b border-white/5 shrink-0">
+              <span className="text-xs font-black text-slate-300">🖼️ 串烧结业荣耀海报</span>
+              <button 
+                onClick={() => setShowSharePosterModal(false)}
+                className="p-1 hover:bg-white/10 rounded-full text-slate-400"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Middle: Container displaying the Poster Mock/Canvas */}
+            <div className="flex-1 flex items-center justify-center overflow-hidden my-3">
+              {isPosterGenerating ? (
+                <div className="text-center p-6 space-y-3">
+                  <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto" />
+                  <p className="text-xs text-slate-400 font-bold">金墨浸染海报渲染中...</p>
+                </div>
+              ) : (
+                <div className="relative max-w-[280px] w-full max-h-[80vh] bg-gradient-to-b from-[#090F1B] to-[#020305] rounded-2xl border border-yellow-500/40 p-4 font-sans text-left overflow-y-auto hide-scrollbar shadow-inner shadow-2xl">
+                  {/* Miniature Poster Simulation rendering identical output as canvas */}
+                  <div className="text-center py-1">
+                    <span className="text-[7.5px] text-slate-500 tracking-wider font-mono block">WEEKEND MEMORY</span>
+                    <h3 className="text-sm font-black text-[#f5d06e] mt-1 tracking-wider">城市记忆串烧・结业荣耀</h3>
+                    <div className="w-16 h-[1.5px] bg-yellow-500/30 mx-auto mt-2" />
+                  </div>
+
+                  {/* Body textuals */}
+                  <div className="mt-4 space-y-1.5 pt-1 text-center flex flex-col items-center">
+                    <img 
+                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full border border-yellow-500/40 object-cover shadow-md mb-1"
+                      referrerPolicy="no-referrer"
+                    />
+                    <h4 className="text-sm font-black text-white">{`木小六`}</h4>
+                  </div>
+
+                  {/* Highlights statistics row */}
+                  <div className="my-3.5 bg-[#0f172a] p-2 rounded-xl grid grid-cols-2 text-center border border-white/5 select-none">
+                    <div>
+                      <span className="text-[8.5px] text-slate-400 block font-bold">累计公里</span>
+                      <strong className="text-xs text-cyan-400 font-mono">{totalMedleyDistance} KM</strong>
+                    </div>
+                    <div>
+                      <span className="text-[8.5px] text-slate-400 block font-bold">连携路线</span>
+                      <strong className="text-xs text-emerald-400">{completedCount} / 3</strong>
+                    </div>
+                  </div>
+
+                  {/* Mini cards for 3 roads */}
+                  <div className="space-y-2 select-none">
+                    <span className="text-[8px] text-slate-400 font-bold block">🗺️ 连携藏品印迹:</span>
+                    {selectedItems.map((item, id) => {
+                      const isDone = completedRouteIds.includes(item.id);
+                      return (
+                        <div key={item.id} className="bg-black/30 p-2 rounded-xl border border-white/5 flex items-center justify-between text-[8.5px]">
+                          <span className="text-slate-200 truncate pr-2 font-bold">跑道 {id+1}: {item.cityName}·{item.routeName}</span>
+                          <span className={isDone ? 'text-emerald-400 font-black' : 'text-slate-500'}>
+                            {isDone ? '● 已达成' : '进行中'}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* QR code footer sim */}
+                  <div className="mt-4 pt-3.5 border-t border-white/10 flex justify-between items-center">
+                    <div>
+                      <span className="text-[8.5px] text-slate-400 font-bold block">微信运动·周末串道</span>
+                      <span className="text-[7.5px] text-slate-500 block leading-normal mt-0.5">扫码一同踏上历史探索印记</span>
+                    </div>
+                    {/* Simulated white pixel QR block */}
+                    <div className="w-8 h-8 bg-white p-0.5 flex flex-wrap gap-0.5">
+                      <div className="w-3 h-3 bg-slate-900" />
+                      <div className="w-3 h-3 bg-slate-900" style={{marginLeft: 'auto'}} />
+                      <div className="w-3 h-3 bg-slate-900" style={{marginTop: 'auto'}} />
+                      <div className="w-3 h-3 bg-slate-500" style={{marginTop: 'auto', marginLeft: 'auto'}} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Poster bottom toolbar with interactive actions */}
+            <div className="bg-[#0b0c10] border-t border-white/5 p-4 rounded-t-3xl space-y-3 shrink-0 text-left">
+              <span className="text-[10px] text-slate-400 font-black block tracking-widest uppercase">选择海报输出路径</span>
+              
+              <div className="grid grid-cols-2 gap-3">
+                {/* 1. DOWNLOAD OR SAVING LOCAL BUTTON */}
+                {posterDownloadUrl ? (
+                  <a 
+                    href={posterDownloadUrl}
+                    download="weekend_memory_poster.png"
+                    onClick={() => {
+                      setShareToastText('恭喜！荣誉海报PNG已成功下载到您设备的下载目录中。');
+                      setTimeout(() => setShareToastText(null), 3000);
+                    }}
+                    className="flex items-center justify-center gap-1.5 bg-[#152e46] hover:bg-[#1f4568] text-cyan-300 font-bold py-3 px-4 rounded-xl text-xs transition-colors"
+                  >
+                    <Download size={14} />
+                    <span>保存海报到本地</span>
+                  </a>
+                ) : (
+                  <button 
+                    onClick={handleGeneratePoster}
+                    className="flex items-center justify-center gap-1.5 bg-[#152e46]/60 text-cyan-400 font-bold py-3 px-4 rounded-xl text-xs"
+                    disabled={isPosterGenerating}
+                  >
+                    <Download size={14} className="animate-bounce" />
+                    <span>生成中...</span>
+                  </button>
+                )}
+
+                {/* 2. SIMULATE WECHAT SHARE */}
+                <button
+                  onClick={() => handleSimulateWechatShare('friend')}
+                  disabled={isSharingToWechat}
+                  className="flex items-center justify-center gap-1.5 bg-[#26b180] hover:bg-[#1f936a] text-white font-extrabold py-3 px-4 rounded-xl text-xs transition-colors"
+                >
+                  <Send size={13} />
+                  <span>微信好友分享</span>
+                </button>
+              </div>
+
+              {/* Extra trigger for Moments sharing */}
+              <button
+                onClick={() => handleSimulateWechatShare('moments')}
+                disabled={isSharingToWechat}
+                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 border border-white/5 text-[10.5px] text-slate-300 font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <span>🌐 分享到微信朋友圈</span>
+              </button>
+            </div>
+
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  };
+
+  const renderShareToast = () => {
+    return (
+      <AnimatePresence>
+        {shareToastText && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 15 }}
+            className="absolute bottom-24 left-4 right-4 z-[110] bg-[#0d1527] border border-cyan-500/50 text-cyan-200 text-[10.5px] font-bold px-3 py-2.5 rounded-lg text-center flex items-center justify-center gap-2 shadow-2xl backdrop-blur-md"
+          >
+            <Sparkles size={13} className="text-cyan-400 animate-spin" />
+            <span>{shareToastText}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  };
+
   // -------------------------------------------------------------
   // VIEW MODE: SELECTION (STANDALONE SELECTION PAGE)
   // -------------------------------------------------------------
@@ -1256,9 +1425,19 @@ export default function WeekendMedleyView({
               </div>
             </div>
 
-            <p className="text-[11.5px] text-slate-400 font-bold mt-3 leading-relaxed text-center">
-              完成三条路线得 1 次机会，分享成果可再得 1 次
-            </p>
+            {/* 新增的分享即可获取抽奖次数按钮 */}
+            <div className="mt-1.5 mb-2 mx-auto max-w-[240px]">
+              <button
+                onClick={() => {
+                  setShowSharePosterModal(true);
+                  handleGeneratePoster();
+                }}
+                className="w-full py-2 bg-slate-800/80 hover:bg-slate-700/80 text-yellow-300 font-bold rounded-full border border-yellow-400/40 text-[11px] flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm"
+              >
+                <Share2 size={12} className="text-yellow-400" />
+                <span>立即分享，再得 1 次抽奖机会</span>
+              </button>
+            </div>
 
           </div>
 
@@ -1376,10 +1555,25 @@ export default function WeekendMedleyView({
                 >
                   收下现金大吉
                 </button>
+
+                <button
+                  onClick={() => {
+                    handleCloseDrawModal();
+                    setShowSharePosterModal(true);
+                    handleGeneratePoster();
+                  }}
+                  className="w-full mt-3 py-3 bg-white/10 hover:bg-white/20 text-yellow-300 border border-yellow-400/30 font-extrabold rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-sm"
+                >
+                  <Share2 size={13} className="text-yellow-400" />
+                  <span>分享可额外获取一次抽奖机会</span>
+                </button>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
+
+        {renderSharePosterModal()}
+        {renderShareToast()}
 
       </div>
     );
@@ -1616,19 +1810,7 @@ export default function WeekendMedleyView({
       </div>
 
       {/* FLOAT ALERTS PORTAL */}
-      <AnimatePresence>
-        {shareToastText && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 15 }}
-            className="absolute bottom-24 left-4 right-4 z-[110] bg-[#0d1527] border border-cyan-500/50 text-cyan-200 text-[10.5px] font-bold px-3 py-2.5 rounded-lg text-center flex items-center justify-center gap-2 shadow-2xl backdrop-blur-md"
-          >
-            <Sparkles size={13} className="text-cyan-400 animate-spin" />
-            <span>{shareToastText}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {renderShareToast()}
 
       {/* 4. KEEP-IN-PLACE PREMIUM FLOATING BOTTOM DOCK ACTION BAR */}
       <div className="absolute bottom-0 left-0 right-0 z-40 bg-black/90 backdrop-blur-md pt-3.5 pb-5 pb-safe px-4 border-t border-white/5 flex flex-col gap-2.5">
@@ -1703,152 +1885,7 @@ export default function WeekendMedleyView({
       </div>
 
       {/* EXQUISITE SHARE POSTER MODAL (WITH CODE CANVAS SUPPORT AND RAW PREVIEWS) */}
-      <AnimatePresence>
-        {showSharePosterModal && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4"
-          >
-            {/* Header section of poster modal */}
-            <div className="flex justify-between items-center py-2 border-b border-white/5 shrink-0">
-              <span className="text-xs font-black text-slate-300">🖼️ 串烧结业荣耀海报</span>
-              <button 
-                onClick={() => setShowSharePosterModal(false)}
-                className="p-1 hover:bg-white/10 rounded-full text-slate-400"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Middle: Container displaying the Poster Mock/Canvas */}
-            <div className="flex-1 flex items-center justify-center overflow-hidden my-3">
-              {isPosterGenerating ? (
-                <div className="text-center p-6 space-y-3">
-                  <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto" />
-                  <p className="text-xs text-slate-400 font-bold">金墨浸染海报渲染中...</p>
-                </div>
-              ) : (
-                <div className="relative max-w-[280px] w-full max-h-[80vh] bg-gradient-to-b from-[#090F1B] to-[#020305] rounded-2xl border border-yellow-500/40 p-4 font-sans text-left overflow-y-auto hide-scrollbar shadow-inner shadow-2xl">
-                  {/* Miniature Poster Simulation rendering identical output as canvas */}
-                  <div className="text-center py-1">
-                    <span className="text-[7.5px] text-slate-500 tracking-wider font-mono block">WEEKEND MEMORY</span>
-                    <h3 className="text-sm font-black text-[#f5d06e] mt-1 tracking-wider">城市记忆串烧・结业荣耀</h3>
-                    <div className="w-16 h-[1.5px] bg-yellow-500/30 mx-auto mt-2" />
-                  </div>
-
-                  {/* Body textuals */}
-                  <div className="mt-4 space-y-1.5 pt-1 text-center flex flex-col items-center">
-                    <img 
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full border border-yellow-500/40 object-cover shadow-md mb-1"
-                      referrerPolicy="no-referrer"
-                    />
-                    <h4 className="text-sm font-black text-white">{`木小六`}</h4>
-                  </div>
-
-                  {/* Highlights statistics row */}
-                  <div className="my-3.5 bg-[#0f172a] p-2 rounded-xl grid grid-cols-2 text-center border border-white/5 select-none">
-                    <div>
-                      <span className="text-[8.5px] text-slate-400 block font-bold">累计公里</span>
-                      <strong className="text-xs text-cyan-400 font-mono">{totalMedleyDistance} KM</strong>
-                    </div>
-                    <div>
-                      <span className="text-[8.5px] text-slate-400 block font-bold">连携路线</span>
-                      <strong className="text-xs text-emerald-400">{completedCount} / 3</strong>
-                    </div>
-                  </div>
-
-                  {/* Mini cards for 3 roads */}
-                  <div className="space-y-2 select-none">
-                    <span className="text-[8px] text-slate-400 font-bold block">🗺️ 连携藏品印迹:</span>
-                    {selectedItems.map((item, id) => {
-                      const isDone = completedRouteIds.includes(item.id);
-                      return (
-                        <div key={item.id} className="bg-black/30 p-2 rounded-xl border border-white/5 flex items-center justify-between text-[8.5px]">
-                          <span className="text-slate-200 truncate pr-2 font-bold">跑道 {id+1}: {item.cityName}·{item.routeName}</span>
-                          <span className={isDone ? 'text-emerald-400 font-black' : 'text-slate-500'}>
-                            {isDone ? '● 已达成' : '进行中'}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* QR code footer sim */}
-                  <div className="mt-4 pt-3.5 border-t border-white/10 flex justify-between items-center">
-                    <div>
-                      <span className="text-[8.5px] text-slate-400 font-bold block">微信运动·周末串道</span>
-                      <span className="text-[7.5px] text-slate-500 block leading-normal mt-0.5">扫码一同踏上历史探索印记</span>
-                    </div>
-                    {/* Simulated white pixel QR block */}
-                    <div className="w-8 h-8 bg-white p-0.5 flex flex-wrap gap-0.5">
-                      <div className="w-3 h-3 bg-slate-900" />
-                      <div className="w-3 h-3 bg-slate-900" style={{marginLeft: 'auto'}} />
-                      <div className="w-3 h-3 bg-slate-900" style={{marginTop: 'auto'}} />
-                      <div className="w-3 h-3 bg-slate-500" style={{marginTop: 'auto', marginLeft: 'auto'}} />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Poster bottom toolbar with interactive actions */}
-            <div className="bg-[#0b0c10] border-t border-white/5 p-4 rounded-t-3xl space-y-3 shrink-0 text-left">
-              <span className="text-[10px] text-slate-400 font-black block tracking-widest uppercase">选择海报输出路径</span>
-              
-              <div className="grid grid-cols-2 gap-3">
-                {/* 1. DOWNLOAD OR SAVING LOCAL BUTTON */}
-                {posterDownloadUrl ? (
-                  <a 
-                    href={posterDownloadUrl}
-                    download="weekend_memory_poster.png"
-                    onClick={() => {
-                      setShareToastText('恭喜！荣誉海报PNG已成功下载到您设备的下载目录中。');
-                      setTimeout(() => setShareToastText(null), 3000);
-                    }}
-                    className="flex items-center justify-center gap-1.5 bg-[#152e46] hover:bg-[#1f4568] text-cyan-300 font-bold py-3 px-4 rounded-xl text-xs transition-colors"
-                  >
-                    <Download size={14} />
-                    <span>保存海报到本地</span>
-                  </a>
-                ) : (
-                  <button 
-                    onClick={handleGeneratePoster}
-                    className="flex items-center justify-center gap-1.5 bg-[#152e46]/60 text-cyan-400 font-bold py-3 px-4 rounded-xl text-xs"
-                    disabled={isPosterGenerating}
-                  >
-                    <Download size={14} className="animate-bounce" />
-                    <span>生成中...</span>
-                  </button>
-                )}
-
-                {/* 2. SIMULATE WECHAT SHARE */}
-                <button
-                  onClick={() => handleSimulateWechatShare('friend')}
-                  disabled={isSharingToWechat}
-                  className="flex items-center justify-center gap-1.5 bg-[#26b180] hover:bg-[#1f936a] text-white font-extrabold py-3 px-4 rounded-xl text-xs transition-colors"
-                >
-                  <Send size={13} />
-                  <span>微信好友分享</span>
-                </button>
-              </div>
-
-              {/* Extra trigger for Moments sharing */}
-              <button
-                onClick={() => handleSimulateWechatShare('moments')}
-                disabled={isSharingToWechat}
-                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 border border-white/5 text-[10.5px] text-slate-300 font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors"
-              >
-                <span>🌐 分享到微信朋友圈</span>
-              </button>
-            </div>
-
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {renderSharePosterModal()}
 
       {/* 🎉 WEEKEND MEDLEY COMPLETION CELEBRATION MODAL OVERLAY */}
       <AnimatePresence>
