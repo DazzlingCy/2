@@ -40,7 +40,7 @@ export default function EventsTab({ onSelectMedley }: EventsTabProps) {
             </div>
             <h2 className="text-base font-bold mb-0.5 tracking-wide text-emerald-100 flex items-center gap-2">
               <span>周末城市记忆串烧</span>
-              <span className="text-[8px] bg-amber-400/20 border border-amber-400/40 text-amber-300 font-extrabold px-1.5 py-0.5 rounded-md uppercase font-mono tracking-normal leading-none scale-90 origin-left">10 选 3</span>
+              <span className="text-[8px] bg-amber-400/20 border border-amber-400/40 text-amber-300 font-extrabold px-1.5 py-0.5 rounded-md uppercase font-mono tracking-normal leading-none scale-90 origin-left">第一期</span>
             </h2>
             <div className="flex items-center justify-between">
               <p className="text-emerald-200/60 text-[11px] max-w-[65%] leading-relaxed line-clamp-2">

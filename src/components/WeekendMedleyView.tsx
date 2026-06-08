@@ -718,7 +718,7 @@ export default function WeekendMedleyView({
         });
         
         // Use nice elegant toast notification now!
-        setShareToastText('🎉 分享成功！已获得 1 次翻牌机会！');
+        setShareToastText('🎉 分享成功！已获得 1 次抽奖机会！');
         setTimeout(() => setShareToastText(null), 3500);
       } else {
         setShareToastText('🎉 分享成功！');
@@ -829,7 +829,6 @@ export default function WeekendMedleyView({
               <Sparkles size={15} className="text-[#f5d06e]" />
               自定串烧跑道
             </h2>
-            <p className="text-[10px] text-slate-400 mt-0.5 font-bold">自主选 3 条 • 点亮秘传里程碑</p>
           </div>
           
           <div className="w-10" />
@@ -847,7 +846,7 @@ export default function WeekendMedleyView({
               <span>🗺️</span> 串烧配制指南
             </h4>
             <p className="text-[11px] text-slate-300 mt-1.5 leading-relaxed font-semibold">
-              请点击下方列表任意选择 <strong className="text-[#f5d06e]">3 条</strong> 历史探胜跑道配制专属于您的周末记忆连携。出于时空多样性约束，
+              请点击下方列表任意选择 <strong className="text-[#f5d06e]">3 条</strong> 路线配制专属于您的周末记忆。出于时空多样性约束，
               <strong className="text-cyan-400">每个城市至多可选定 1 条路线</strong>。
             </p>
           </div>
@@ -1037,7 +1036,7 @@ export default function WeekendMedleyView({
         </div>
 
         {/* Scrollable Sub-screen Inner */}
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4 hide-scrollbar pb-32">
+        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4 hide-scrollbar pb-8">
           
           {/* Main Card Container with premium design */}
           <div className="w-full bg-[#12131a] rounded-3xl p-5 border border-zinc-850 shadow-[0_12px_28px_rgba(0,0,0,0.55)] relative overflow-hidden text-center">
@@ -1257,6 +1256,10 @@ export default function WeekendMedleyView({
               </div>
             </div>
 
+            <p className="text-[11.5px] text-slate-400 font-bold mt-3 leading-relaxed text-center">
+              完成三条路线得 1 次机会，分享成果可再得 1 次
+            </p>
+
           </div>
 
           {/* 🎁 奖池与概率 */}
@@ -1330,28 +1333,7 @@ export default function WeekendMedleyView({
 
         </div>
 
-        {/* Sticky Fixed Bottom area matching mockup */}
-        <div className="absolute bottom-0 inset-x-0 z-40 bg-black/95 backdrop-blur-md pt-3.5 pb-5 pb-safe px-4 border-t border-zinc-900/60 flex flex-col items-center justify-center space-y-2.5 shrink-0">
-          {lotteryChances > 0 ? (
-            <div
-              className="w-full py-4 rounded-2xl bg-[#1c1d27]/75 border border-zinc-850 text-[#fff] font-extrabold text-sm tracking-wide flex items-center justify-center gap-2 select-none shadow-[0_4px_12px_rgba(0,0,0,0.3)] animate-pulse"
-            >
-              <Ticket size={14} className="text-[#ffe082]" fill="currentColor" />
-              <span>剩余抽奖机会: <span className="text-[#ffe082] font-black font-mono text-base px-0.5">{lotteryChances}</span> 次，请选择现金卡</span>
-            </div>
-          ) : (
-            <div
-              className="w-full py-4 rounded-2xl bg-[#0f1016] border border-zinc-900 text-zinc-500 font-extrabold text-sm tracking-wide flex items-center justify-center gap-2 select-none"
-            >
-              <Ticket size={14} className="text-zinc-600 opacity-60" />
-              <span>暂无抽奖机会</span>
-            </div>
-          )}
 
-          <span className="text-[10px] text-[#8e8e93] font-semibold text-center pb-2">
-            完成三条路线得 1 次机会，分享成果可再得 1 次
-          </span>
-        </div>
 
         {/* ROLLED PRIZE RESULT MODAL OVERLAY INLINE TO LOTTERY VIEW */}
         <AnimatePresence>
@@ -1451,8 +1433,13 @@ export default function WeekendMedleyView({
           {/* Hero Content Block */}
           <div className="relative z-20 px-5 pt-12 pb-6 text-left">
             {/* Unified category tag */}
-            <div className="inline-flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-500/25 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase">
-              <span>👟 城市串烧活动</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="inline-flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-500/25 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase">
+                <span>👟 城市串烧活动</span>
+              </div>
+              <div className="inline-flex items-center bg-amber-400/20 border border-amber-400/40 text-amber-300 font-extrabold px-2 py-1 rounded-md text-[9px] uppercase tracking-normal leading-none">
+                <span>第一期</span>
+              </div>
             </div>
 
             {/* Huge bold display title */}
@@ -1462,7 +1449,7 @@ export default function WeekendMedleyView({
 
             {/* Explanatory introduction text */}
             <p className="text-[11px] text-slate-300 leading-relaxed font-semibold mt-3 max-w-[340px] drop-shadow-sm">
-              这个周末，从古寺、皇城、旧街与河岸出发，把三座城市的历史片段串成一段奔跑记忆。每一条路线都是一枚城市印章，完成串烧后解锁现金翻牌抽奖。
+              这个周末，从古寺、皇城、旧街与河岸出发，把三座城市的历史片段串成一段奔跑记忆。每一条路线都是一枚城市印章，完成串烧后解锁现金抽奖。
             </p>
 
             {/* Integrated activity opening schedule banner with custom thin borders */}
@@ -1527,7 +1514,7 @@ export default function WeekendMedleyView({
                   选择 3 条城市路线
                 </span>
                 <p className="text-[10px] text-slate-400 max-w-[240px] text-center leading-normal font-semibold">
-                  进入独立路线列表，挑选 3 条历史文化路线。保存后本次活动不可更改。
+                  进入独立路线列表，挑选 3 条路线。保存后本次活动不可更改。
                 </p>
               </button>
             ) : (
@@ -1604,16 +1591,7 @@ export default function WeekendMedleyView({
             )}
           </div>
 
-          {/* If all completed, show a success banner directly on home-screen too */}
-          {isMedleyAllCompleted && (
-            <div className="p-4 rounded-2xl bg-gradient-to-tr from-[#1b1c2b] to-[#0d0d17] border border-[#f5cb4e]/30 text-center shadow-lg">
-              <h4 className="text-xs font-black text-[#f5cb4e] flex items-center justify-center gap-1.5">
-                <Trophy size={14} className="text-[#f5cb4e] fill-amber-500/10" />
-                周末城市记忆串烧已完美完成！
-              </h4>
-              <p className="text-[10px] text-slate-300 mt-1.5 leading-relaxed font-bold">恭喜探索家！所有串烧印章均已集齐点亮！请点击下方“前往领奖”跳转单独的时空翻牌界面抽取现金大礼吧！ 🏮</p>
-            </div>
-          )}
+          {/* Remove the completed banner card per request */}
 
           {/* ACTIVITY RULES CARD BLOCK */}
           <div className="bg-[#080d15] rounded-2xl p-4 border border-white/5 text-left space-y-3 shadow-lg">
@@ -1627,21 +1605,16 @@ export default function WeekendMedleyView({
               </li>
               <li className="flex gap-2">
                 <span className="text-[#f5d06e] shrink-0">2.</span>
-                <span>完成全部 3 条记忆路线后，点亮连携，直接解锁独立页面的翻卡大奖！</span>
+                <span>完成全部 3 条记忆路线后，100%抽取现金奖励！</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-[#f5d06e] shrink-0">3.</span>
-                <span>完成串烧或探索过程中，点击“分享海报”转发成果，可额外赠送 <strong className="text-cyan-400">1 次</strong> 大奖翻卡机会。</span>
+                <span>完成串烧或探索过程中，点击“分享海报”转发成果，可额外赠送 <strong className="text-cyan-400">1 次</strong> 大奖抽奖机会。</span>
               </li>
             </ul>
           </div>
 
-          {/* Dynamic Status Callout when active */}
-          {activityStarted && !isMedleyAllCompleted && (
-            <div className="p-3.5 rounded-xl bg-slate-950/60 text-center border border-white/5 text-[10.5px] text-slate-400 font-bold leading-relaxed text-left">
-              ⏳ 请在跑台上跑完上述 3 条选择的记忆路线，点亮全部 3 段华夏遗珍，即可去翻开微信现金秘宝！
-            </div>
-          )}
+
         </div>
 
       </div>
@@ -1689,7 +1662,7 @@ export default function WeekendMedleyView({
             ) : isMedleyAllCompleted ? (
               <>
                 <Gift size={14} className="stroke-[2.5]" />
-                <span>🎁 串烧完成，翻卡领现金</span>
+                <span>🎁 串烧完成，抽奖领现金</span>
               </>
             ) : (
               <>
@@ -1928,7 +1901,7 @@ export default function WeekendMedleyView({
                   您已圆满完成本次周末挑战！
                 </p>
                 <p className="text-[11px] text-slate-400 leading-relaxed font-bold">
-                  🏅 专属荣誉勋章已淬炼完成，1次翻卡取现机会已帮您解锁，快去夺取现金红包吧！
+                  🏅 专属荣誉勋章已淬炼完成，1次抽奖取现机会已帮您解锁，快去夺取现金红包吧！
                 </p>
               </div>
 
@@ -1942,7 +1915,7 @@ export default function WeekendMedleyView({
                   className="w-full py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-md"
                 >
                   <Gift size={14} className="stroke-[2.5]" />
-                  <span>🎁 立即前往翻卡领奖</span>
+                  <span>🎁 立即前往抽奖领奖</span>
                 </button>
               </div>
             </motion.div>
