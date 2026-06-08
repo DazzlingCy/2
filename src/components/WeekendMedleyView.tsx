@@ -251,7 +251,127 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
   }
 ];
 
-const LOTTERY_PRIZES = [0.88, 1.88, 6.66, 8.88, 18.88];
+const LOTTERY_PRIZES = [0.88, 1.88, 2.88, 6.66, 8.88, 18.88];
+
+const WHEEL_SECTORS = [
+  { value: 0.88, type: 'envelope' },
+  { value: 1.88, type: 'envelope' },
+  { value: 2.88, type: 'envelope' },
+  { value: 6.66, type: 'envelope' },
+  { value: 8.88, type: 'envelope' },
+  { value: 18.88, type: 'envelope' }
+];
+
+function getSectorPath(startAngle: number, endAngle: number, r: number) {
+  const startRad = (startAngle * Math.PI) / 180;
+  const endRad = (endAngle * Math.PI) / 180;
+  
+  const x1 = 100 + r * Math.cos(startRad);
+  const y1 = 100 + r * Math.sin(startRad);
+  const x2 = 100 + r * Math.cos(endRad);
+  const y2 = 100 + r * Math.sin(endRad);
+  
+  return `M 100 100 L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+}
+
+function ConfettiCanvas({ active }: { active: boolean }) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    if (!active) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = canvas.width = canvas.parentElement?.clientWidth || window.innerWidth;
+    let height = canvas.height = canvas.parentElement?.clientHeight || window.innerHeight;
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = canvas.parentElement?.clientWidth || window.innerWidth;
+      height = canvas.height = canvas.parentElement?.clientHeight || window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    const colors = ['#FFD700', '#FF4D4D', '#FF8E53', '#4CAF50', '#2196F3', '#E040FB', '#00E676', '#FFFF00'];
+    const particles: Array<{
+      x: number;
+      y: number;
+      r: number;
+      color: string;
+      vx: number;
+      vy: number;
+      rotation: number;
+      rotationSpeed: number;
+      opacity: number;
+      shape: string;
+    }> = [];
+
+    // Powerful Initial Center-Burst Explosion
+    for (let i = 0; i < 110; i++) {
+      particles.push({
+        x: width / 2,
+        y: height / 2 - 30,
+        r: Math.random() * 5 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 16,
+        vy: -Math.random() * 14 - 4, // Shoot upwards
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 8,
+        opacity: 1,
+        shape: Math.random() > 0.4 ? 'circle' : 'rect'
+      });
+    }
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.28; // gravity
+        p.vx *= 0.98;  // air resistance
+        p.rotation += p.rotationSpeed;
+
+        // Slowly fade out as they fall and float (fade completely over ~2.5 seconds)
+        p.opacity -= 0.006 + Math.random() * 0.004;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.fillStyle = p.color;
+
+        if (p.shape === 'circle') {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
+        }
+        ctx.restore();
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [active]);
+
+  return (
+    <canvas 
+      ref={canvasRef} 
+      className="absolute inset-0 w-full h-full pointer-events-none z-40"
+    />
+  );
+}
 
 interface WeekendMedleyViewProps {
   onBack: () => void;
@@ -335,9 +455,8 @@ export default function WeekendMedleyView({
   const [isSharingToWechat, setIsSharingToWechat] = useState(false);
   const [shareToastText, setShareToastText] = useState<string | null>(null);
 
-  // 3D Card flip States
-  const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
-  const [revealedPrizes, setRevealedPrizes] = useState<number[]>([]);
+  // Big Wheel/Turntable States
+  const [wheelRotation, setWheelRotation] = useState<number>(0);
 
   // Helper check if selected
   const isRouteSelected = (id: string) => selectedRouteIds.includes(id);
@@ -401,7 +520,6 @@ export default function WeekendMedleyView({
   // Generate poster onto the canvas and prepare the download URL
   const handleGeneratePoster = () => {
     setIsPosterGenerating(true);
-    setShareToastText('正在淬炼华夏探索印章，生成极佳运动海报...');
     
     setTimeout(() => {
       try {
@@ -475,18 +593,9 @@ export default function WeekendMedleyView({
         ctx.textAlign = 'center';
         ctx.fillText('木', 300, 164);
 
-        ctx.font = '20px sans-serif';
-        ctx.fillStyle = '#94A3B8';
-        ctx.fillText('致 华夏记忆探索家', 300, 198);
-
         ctx.font = 'bold 28px sans-serif';
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillText('木小六', 300, 236);
-
-        // Sub description
-        ctx.font = '14px sans-serif';
-        ctx.fillStyle = '#64748B';
-        ctx.fillText('在古寺、皇城、旧街与河岸之间，你用脚步点亮了城市的记忆。', 300, 268);
+        ctx.fillText('木小六', 300, 220);
 
         // 5. Drawing stats grids (Distance / completed nodes)
         ctx.fillStyle = '#0F172A';
@@ -551,28 +660,6 @@ export default function WeekendMedleyView({
           ctx.textAlign = 'left';
         });
 
-        // 7. Traditional Stamp Graphic (Red Circle with Traditional Design)
-        ctx.shadowColor = 'rgba(0,0,0,0)'; // Reset shadow
-        ctx.textAlign = 'center';
-        
-        ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(430, 220, 42, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(430, 220, 36, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Stamp Inner typography centered
-        ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
-        ctx.font = 'bold 13px sans-serif';
-        ctx.fillText('周末历史', 430, 210);
-        ctx.fillText('连携印赏', 430, 232);
-
         // 8. Footer Info & Pseudo Scan QR code
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.lineWidth = 1;
@@ -608,14 +695,10 @@ export default function WeekendMedleyView({
         const generatedUrl = canvas.toDataURL('image/png');
         setPosterDownloadUrl(generatedUrl);
         setIsPosterGenerating(false);
-        setShareToastText('精品荣誉海报渲染成功！可保存至本地。');
-        setTimeout(() => setShareToastText(null), 3500);
 
       } catch (err) {
         console.error('Canvas generate poster failed', err);
         setIsPosterGenerating(false);
-        setShareToastText('Canvas 跨域渲染海报失败，已降级启用自适应精美 HTML 分享页');
-        setTimeout(() => setShareToastText(null), 3000);
       }
     }, 1500);
   };
@@ -644,36 +727,45 @@ export default function WeekendMedleyView({
     }, 1200);
   };
 
-  const handleFlipCard = (cardIdx: number) => {
-    if (lotteryChances <= 0 || isDrawing || flippedIndices.length > 0) return;
+  const handleSpinWheel = () => {
+    if (lotteryChances <= 0 || isDrawing) return;
     if (poolBalance <= 0) {
       setSelectError('很抱歉，本期 500 元现金奖池已被全部抽空啦，请等待下期刷新或点击下方重置测试！');
       return;
     }
     
     setIsDrawing(true);
-    setFlippedIndices([cardIdx]);
 
-    // Roll random award value
-    const rolledValue = LOTTERY_PRIZES[Math.floor(Math.random() * LOTTERY_PRIZES.length)];
-    
-    // Choose other 2 fake prizes to show as decoys
-    const decoys = LOTTERY_PRIZES.filter(v => v !== rolledValue);
-    const mockThree = [0, 0, 0];
-    mockThree[cardIdx] = rolledValue;
-    let decoyCounter = 0;
-    for (let i = 0; i < 3; i++) {
-      if (i !== cardIdx) {
-        mockThree[i] = decoys[decoyCounter % decoys.length] || 0.88;
-        decoyCounter++;
-      }
+    // Roll random award value with proper weighted distribution matching display rules for 6 sectors:
+    // 0.88 (45%), 1.88 (30%), 2.88 (10%), 6.66 (10%), 8.88 (4.5%), 18.88 (0.5%)
+    const rand = Math.random() * 100;
+    let winnerIdx = 0;
+    if (rand < 45) {
+      winnerIdx = 0; // 0.88
+    } else if (rand < 75) {
+      winnerIdx = 1; // 1.88
+    } else if (rand < 85) {
+      winnerIdx = 2; // 2.88
+    } else if (rand < 95) {
+      winnerIdx = 3; // 6.66
+    } else if (rand < 99.5) {
+      winnerIdx = 4; // 8.88
+    } else {
+      winnerIdx = 5; // 18.88
     }
+
+    const rolledValue = LOTTERY_PRIZES[winnerIdx];
+
+    // Compute cumulative rotation to point winnerIdx at visual TOP
+    const baseRotation = wheelRotation - (wheelRotation % 360);
+    const newRotation = baseRotation + (5 * 360) + (360 - (winnerIdx * 60 + 30)); // 5 full loops + precise pointing index offset
     
-    setRevealedPrizes(mockThree);
+    setWheelRotation(newRotation);
 
     if (lotteryTimeoutRef.current) {
       clearTimeout(lotteryTimeoutRef.current);
     }
+    
     lotteryTimeoutRef.current = setTimeout(() => {
       setRecentDrawReward(rolledValue);
       setIsDrawing(false);
@@ -688,13 +780,11 @@ export default function WeekendMedleyView({
         drawHistory: [rolledValue, ...drawHistory]
       });
       setShowDrawModal(true);
-    }, 600);
+    }, 2050); 
   };
 
   const handleCloseDrawModal = () => {
     setShowDrawModal(false);
-    setFlippedIndices([]);
-    setRevealedPrizes([]);
   };
 
   const handleActionClick = () => {
@@ -924,8 +1014,6 @@ export default function WeekendMedleyView({
                 clearTimeout(lotteryTimeoutRef.current);
               }
               setViewMode('main');
-              setFlippedIndices([]);
-              setRevealedPrizes([]);
               setIsDrawing(false);
               setShowDrawModal(false);
               setRecentDrawReward(null);
@@ -938,10 +1026,10 @@ export default function WeekendMedleyView({
           
           <div className="text-center">
             <h2 className="text-base font-black tracking-wide text-white leading-tight">
-              现金奖励翻牌
+              时空大转盘
             </h2>
             <p className="text-[10px] text-[#8e8e93] mt-1 font-semibold">
-              三张现金卡，选择一张揭晓奖励
+              转动幸运大转盘，100%抽取现金奖励
             </p>
           </div>
           
@@ -951,7 +1039,7 @@ export default function WeekendMedleyView({
         {/* Scrollable Sub-screen Inner */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4 hide-scrollbar pb-32">
           
-          {/* Main Card Container */}
+          {/* Main Card Container with premium design */}
           <div className="w-full bg-[#12131a] rounded-3xl p-5 border border-zinc-850 shadow-[0_12px_28px_rgba(0,0,0,0.55)] relative overflow-hidden text-center">
             
             {/* Sleek, simplified cash pool status row */}
@@ -971,111 +1059,204 @@ export default function WeekendMedleyView({
               </div>
             </div>
 
-            {/* The 3 Cards Column/Grid, exactly matching mockup cards A, B, C */}
-            <div className="grid grid-cols-3 gap-3 w-full self-center px-0.5 my-3">
-              {[0, 1, 2].map((idx) => {
-                const cardLabel = idx === 0 ? 'A' : idx === 1 ? 'B' : 'C';
-                const isThisFlipped = flippedIndices.includes(idx);
-                const isAnyFlipped = flippedIndices.length > 0;
-                const isThisChosen = flippedIndices[0] === idx;
-                const prizeValue = revealedPrizes[idx];
+            {/* STUNNING 3D-GLOWING BIG TURNTABLE (DA ZHUAN PAN) */}
+            <div className="relative w-72 h-72 sm:w-80 sm:h-80 mx-auto select-none mt-4 mb-4">
+              
+              {/* Outer Stereoscopic Metallic Gold Flaps/Tassels mimicking the mockup earmuffs */}
+              <div className="absolute top-1/2 -translate-y-1/2 -left-4 w-5 h-16 rounded-l-xl bg-gradient-to-r from-red-700 to-amber-500 border-l-2 border-y-2 border-[#ffdf7e]/55 shadow-lg z-15" />
+              <div className="absolute top-1/2 -translate-y-1/2 -right-4 w-5 h-16 rounded-r-xl bg-gradient-to-l from-red-700 to-amber-500 border-r-2 border-y-2 border-[#ffdf7e]/55 shadow-lg z-15" />
+              
+              {/* The Outer Gold/Metallic Frame with Blinking Lights */}
+              <div className="absolute inset-0 rounded-full border-[10px] border-[#FFE7A5]/90 bg-gradient-to-b from-[#ff3c3c] to-[#990a0a] shadow-[0_12px_36px_rgba(0,0,0,0.65),_inset_0_2px_10px_rgba(255,255,255,0.4)] flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-[1px] rounded-full border-2 border-amber-500/40 pointer-events-none" />
+              </div>
 
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      if (lotteryChances > 0 && !isAnyFlipped && !isDrawing) {
-                        handleFlipCard(idx);
-                      }
-                    }}
-                    className={`relative h-40 rounded-2xl cursor-pointer select-none transition-all duration-500 [perspective:1000px] ${
-                      isThisChosen
-                        ? 'ring-2 ring-yellow-500 shadow-[0_0_18px_rgba(234,179,8,0.3)]'
-                        : isThisFlipped
-                          ? 'opacity-65 scale-95'
-                          : isAnyFlipped
-                            ? 'opacity-40 scale-95'
-                            : lotteryChances > 0 
-                              ? 'hover:scale-[1.03] transform hover:-translate-y-1 active:scale-95 animate-pulse'
-                              : 'cursor-not-allowed opacity-80'
-                    }`}
-                  >
-                    <motion.div
-                      animate={{ rotateY: isThisFlipped ? 180 : 0 }}
-                      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-                      style={{ transformStyle: 'preserve-3d' }}
-                      className="w-full h-full relative"
-                    >
-                      {/* FRONT CARD (Closed envelope state - View matches mockup perfectly without ABC) */}
-                      <div
-                        className="absolute inset-0 bg-gradient-to-b from-[#1b1c24] to-[#0d0e14] border border-zinc-805 rounded-2xl flex flex-col justify-between p-3 [backface-visibility:hidden]"
-                      >
-                        {/* Tags Top */}
-                        <div className="flex justify-between items-center w-full">
-                          <span className="text-[12px] leading-none select-none">🧧</span>
-                          <Sparkles size={9} className="text-[#ffe082]/75" />
-                        </div>
+              {/* ROTATING WHEEL CANVAS CONTAINER */}
+              <motion.div
+                animate={{ rotate: wheelRotation }}
+                transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-[14px] rounded-full overflow-hidden shadow-inner bg-stone-100"
+              >
+                <svg viewBox="0 0 200 200" className="w-full h-full rotate-0">
+                  <defs>
+                    <radialGradient id="outerRedGradient" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#ff4d4d" />
+                      <stop offset="60%" stopColor="#e52d27" />
+                      <stop offset="100%" stopColor="#940b0e" />
+                    </radialGradient>
+                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#fff9e6" />
+                      <stop offset="30%" stopColor="#ffe082" />
+                      <stop offset="70%" stopColor="#ffb300" />
+                      <stop offset="100%" stopColor="#b45309" />
+                    </linearGradient>
+                    <linearGradient id="blackGoldCard" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#4A4E69" />
+                      <stop offset="40%" stopColor="#222431" />
+                      <stop offset="100%" stopColor="#0B0C10" />
+                    </linearGradient>
+                    <linearGradient id="buttonRed" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#ff8a8a" />
+                      <stop offset="25%" stopColor="#ff3b30" />
+                      <stop offset="80%" stopColor="#d51a1a" />
+                      <stop offset="100%" stopColor="#800609" />
+                    </linearGradient>
+                    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+                      <feDropShadow dx="0" dy="1.5" stdDeviation="1" floodOpacity="0.45" />
+                    </filter>
+                  </defs>
 
-                        {/* Mid envelope circle */}
-                        <div className="flex flex-col items-center justify-center">
-                          <div className="w-10 h-10 rounded-full border border-[#ffe082]/20 bg-[#252015] flex items-center justify-center mb-2 shadow-[0_4px_10px_rgba(255,224,130,0.05)]">
-                            <Mail size={14} className="text-[#f5cb4e]" />
-                          </div>
-                          
-                          <span className="text-[11px] font-black text-white tracking-widest block leading-none">现金卡</span>
-                        </div>
+                  {/* Slices representation (6 equal spaces) */}
+                  {WHEEL_SECTORS.map((p, idx) => {
+                    const startAngle = -90 + idx * 60;
+                    const endAngle = startAngle + 60;
+                    const d = getSectorPath(startAngle, endAngle, 99); // Fill inner area perfectly
+                    
+                    const midAngle = startAngle + 30;
+                    const midRad = (midAngle * Math.PI) / 180;
+                    const tx = 100 + 54 * Math.cos(midRad);
+                    const ty = 100 + 54 * Math.sin(midRad);
 
-                        {/* Bottom Label text */}
-                        <span className="text-[9px] text-[#4d94ff] font-bold leading-none block text-center">
-                          点击翻开
-                        </span>
-                      </div>
+                    // Alternating sectors color exactly copying reference image's color scheme
+                    const fill = idx % 2 === 0 ? '#FFFFFF' : '#FFF2EC';
 
-                      {/* BACK CARD (Flipped amount state) */}
-                      <div
-                        style={{ transform: 'rotateY(180deg)' }}
-                        className={`absolute inset-0 rounded-2xl flex flex-col justify-between p-3 border [backface-visibility:hidden] ${
-                          isThisChosen
-                            ? 'bg-gradient-to-b from-[#2d220a] to-[#0d0902] border-[#ffe082]/80 shadow-[inset_0_1px_15px_rgba(255,224,130,0.15)]'
-                            : 'bg-zinc-950/90 border-zinc-900/80 opacity-60'
+                    return (
+                      <g key={idx}>
+                        {/* Sector shape */}
+                        <path 
+                          d={d} 
+                          fill={fill} 
+                          stroke="#FFE8D5" 
+                          strokeWidth="1"
+                          className="transition-colors duration-200"
+                        />
+                        {/* Golden dividers lines */}
+                        <line 
+                          x1="100" 
+                          y1="100" 
+                          x2={(100 + 99 * Math.cos((startAngle * Math.PI) / 180)).toFixed(2)} 
+                          y2={(100 + 99 * Math.sin((startAngle * Math.PI) / 180)).toFixed(2)} 
+                          stroke="#FFA785" 
+                          strokeWidth="1" 
+                          strokeOpacity="0.55" 
+                        />
+
+                        {/* Handcrafted Vector Red Envelope & Cash Amount strictly centered with smaller delicate scale */}
+                        <g transform={`translate(${tx}, ${ty}) rotate(${midAngle + 90}) scale(0.72)`}>
+                          <g transform="translate(0, -12) scale(1.1)" filter="url(#dropShadow)">
+                            {/* Red Envelope 🧧 */}
+                            <rect x="-9" y="-12" width="18" height="24" rx="2" fill="#E63F38" />
+                            <path d="M -9 -12 L 0 -1 L 9 -12 Z" fill="#C92922" />
+                            <circle cx="0" cy="3" r="3.5" fill="#FFD75E" />
+                            <text x="0" y="4" textAnchor="middle" dominantBaseline="middle" fontSize="3.1" fill="#E63F38" fontWeight="black">¥</text>
+                          </g>
+
+                          {/* Bottom Cash Amount styling */}
+                          <text 
+                            x="0" 
+                            y="16" 
+                            textAnchor="middle" 
+                            dominantBaseline="middle" 
+                            className="fill-[#A11B15] font-mono font-black text-[13.5px] tracking-tight leading-none"
+                          >
+                            ¥{p.value}
+                          </text>
+                        </g>
+                      </g>
+                    );
+                  })}
+                  
+                  {/* Subtle inner gold rim inside wheel sectors */}
+                  <circle cx="100" cy="100" r="98" fill="none" stroke="#FFE2BC" strokeWidth="0.5" strokeOpacity="0.4" />
+                </svg>
+              </motion.div>
+
+              {/* OUTSIDE GLOWING LED DOTS (Placed at outer edge border with dynamic chasing lighting on spin) */}
+              <div className={`absolute inset-0 pointer-events-none z-10 ${isDrawing ? 'animate-[spin_2s_linear_infinite]' : ''}`}>
+                <svg viewBox="0 0 200 200" className="w-full h-full">
+                  {Array.from({ length: 12 }).map((_, i) => {
+                    const angle = i * 30; // 12 lamps total
+                    const rad = (angle * Math.PI) / 180;
+                    const lx = 100 + 94.2 * Math.cos(rad);
+                    const ly = 100 + 94.2 * Math.sin(rad);
+                    const isOdd = i % 2 !== 0;
+                    return (
+                      <circle
+                        key={i}
+                        cx={lx}
+                        cy={ly}
+                        r="2.5"
+                        className={`${
+                          isOdd 
+                            ? "fill-white drop-shadow-[0_0_2px_#FFF] opacity-95" 
+                            : "fill-[#FFE285] drop-shadow-[0_0_2.5px_#FFE285] opacity-90"
                         }`}
-                      >
-                        {/* Tags Top */}
-                        <div className="flex justify-between items-center w-full">
-                          <span className={`text-[9.5px] font-black ${isThisChosen ? 'text-[#ffe082]' : 'text-zinc-500'}`}>WIN</span>
-                          {isThisChosen ? (
-                            <Sparkles size={10} className="text-[#ffe082] animate-pulse" />
-                          ) : (
-                            <Lock size={10} className="text-zinc-600" />
-                          )}
-                        </div>
+                        style={{
+                          animation: isDrawing 
+                            ? `pulse 0.15s infinite alternate ${i * 0.04}s` 
+                            : `pulse 0.5s infinite alternate ${i * 0.08}s`
+                        }}
+                      />
+                    );
+                  })}
+                </svg>
+              </div>
 
-                        {/* Center gold/cash reveal */}
-                        <div className="flex flex-col items-center justify-center">
-                          <span className="text-[8.5px] text-zinc-500 font-bold tracking-widest block leading-none uppercase">微信红包</span>
-                          <span className={`text-base font-mono font-black mt-1.5 leading-none ${isThisChosen ? 'text-yellow-400 scale-110' : 'text-zinc-400'}`}>
-                            ¥{prizeValue || 0.88}
-                          </span>
-                        </div>
-
-                        <span className={`text-[8px] py-0.5 rounded text-center font-black leading-none block w-full border ${
-                          isThisChosen
-                            ? 'bg-yellow-400/20 text-yellow-300 border-yellow-400/30'
-                            : 'bg-zinc-900 border-zinc-800 text-zinc-650'
-                        }`}>
-                          {isThisChosen ? "已抽中" : "未选中"}
-                        </span>
-                      </div>
-                    </motion.div>
+              {/* CENTER 3D SPIN BUTTON (GO Red-Gold Dial layered on top perfectly - kept fully bright even at 0 chances) */}
+              <div className="absolute inset-0 flex items-center justify-center z-20">
+                <div className="relative w-18 h-18 sm:w-20 sm:h-20 flex items-center justify-center">
+                  
+                  {/* Top Pointer - a beautifully extruded Red Triangle pointing at 12 o'clock */}
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[15px] border-b-[#E53E3E] filter drop-shadow-[0_-1px_2px_rgba(255,224,130,0.6)] z-25">
+                    <div className="absolute top-1 -left-[4.5px] w-0 h-0 border-l-[4.5px] border-l-transparent border-r-[4.5px] border-r-transparent border-b-[10px] border-b-[#FFE895]" />
                   </div>
-                );
-              })}
+
+                  {/* Golden Base shadow disk */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-b from-[#FFF5D9] via-[#E2A740] to-[#7F3E00] p-[3px] shadow-[0_8px_20px_rgba(0,0,0,0.7)]">
+                    <button
+                      disabled={isDrawing || lotteryChances <= 0}
+                      onClick={handleSpinWheel}
+                      className={`w-full h-full rounded-full flex flex-col items-center justify-center transition-all border-[2.2px] border-[#800709] active:scale-95 text-white ${
+                        isDrawing 
+                          ? 'bg-gradient-to-b from-[#FFF5F5] via-[#E53E3E] to-[#990B0B] cursor-not-allowed opacity-90 scale-95 select-none' 
+                          : lotteryChances <= 0
+                            ? 'bg-gradient-to-b from-[#FF7A7A] via-[#EF4444] to-[#B91C1C] cursor-not-allowed opacity-100 brightness-110 shadow-[0_0_12px_rgba(239,68,68,0.4)]' // Keep the festive red and gold button fully bright even with 0 chances! No darkness at all
+                            : 'bg-gradient-to-b from-[#FFF5F5] via-[#E53E3E] to-[#990B0B] hover:scale-[1.03] hover:brightness-[1.05] cursor-pointer'
+                      }`}
+                      style={{
+                        boxShadow: 'inset 0 2.2px 3px rgba(255, 255, 255, 0.45)',
+                      }}
+                    >
+                      <span className={`text-[11.5px] sm:text-[13px] font-black tracking-wider -mb-0.5 select-none uppercase drop-shadow-[0_1.5px_1px_rgba(0,0,0,0.85)] ${
+                        lotteryChances <= 0 ? 'text-[#FFE895]' : 'text-[#FFEFCB]'
+                      }`}>
+                        立即
+                      </span>
+                      <span className={`text-[10px] sm:text-[11px] font-black tracking-wide select-none drop-shadow-[0_1.5px_1px_rgba(0,0,0,0.85)] ${
+                        lotteryChances <= 0 ? 'text-[#FFE895]' : 'text-[#FFEFCB]'
+                      }`}>
+                        抽奖
+                      </span>
+                    </button>
+                  </div>
+                  
+                </div>
+              </div>
+              
             </div>
 
-            {/* Below card state text */}
-            <p className="text-[11px] text-[#8e8e93] font-medium leading-relaxed px-1.5 mt-4">
-              当前剩余 <span className="text-white font-black font-mono">{lotteryChances}</span> 次机会，任选一张现金卡翻开。
-            </p>
+            {/* 大转盘底部托板 (国潮金色双层拟物横条，1:1对应截图底条样式) */}
+            <div className="relative mt-8 mb-3 mx-auto max-w-[280px]">
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-600 rounded-full blur-sm opacity-25" />
+              <div className="relative bg-gradient-to-b from-[#FFF3E5] via-[#FFE2C2] to-[#FFD5A1] text-[#9E1A03] text-[11.5px] font-black px-5 py-2.5 rounded-full border-2 border-[#E5A548] shadow-[0_8px_18px_rgba(0,0,0,0.45),_inset_0_2px_4px_rgba(255,255,255,0.8)] tracking-wide flex justify-center items-center gap-1.5 font-sans">
+                <span>您还有</span>
+                <span className="text-red-600 text-sm font-extrabold font-mono bg-white/70 px-2 py-0.5 rounded-md min-w-[20px] text-center shadow-inner inline-block animate-pulse">
+                  {lotteryChances}
+                </span>
+                <span>次抽奖机会</span>
+              </div>
+            </div>
+
           </div>
 
           {/* 🎁 奖池与概率 */}
@@ -1090,23 +1271,24 @@ export default function WeekendMedleyView({
               </div>
             </div>
 
-            {/* Five column horizontal layout cards */}
-            <div className="grid grid-cols-5 gap-1.5 pt-0.5">
+            {/* Six column horizontal layout cards */}
+            <div className="grid grid-cols-6 gap-1 pt-0.5">
               {[
                 { val: 0.88, rate: '45%' },
                 { val: 1.88, rate: '30%' },
-                { val: 6.66, rate: '15%' },
-                { val: 8.88, rate: '8%' },
-                { val: 18.88, rate: '2%' }
+                { val: 2.88, rate: '10%' },
+                { val: 6.66, rate: '10%' },
+                { val: 8.88, rate: '4.5%' },
+                { val: 18.88, rate: '0.5%' }
               ].map((p, idx) => (
                 <div 
                   key={idx}
-                  className="bg-black/35 border border-[#ffe082]/5 rounded-xl py-2 px-1 text-center flex flex-col justify-between h-12"
+                  className="bg-black/35 border border-[#ffe082]/5 rounded-xl py-2 px-0.5 text-center flex flex-col justify-between h-12"
                 >
-                  <span className="text-[11px] font-mono font-black text-[#ffe082] block tracking-tighter leading-none">
+                  <span className="text-[10px] font-mono font-black text-[#ffe082] block tracking-tighter leading-none">
                     ¥{p.val}
                   </span>
-                  <span className="text-[8.5px] text-[#8e8e93] font-bold block leading-none">
+                  <span className="text-[8px] text-[#8e8e93] font-bold block leading-none">
                     {p.rate}
                   </span>
                 </div>
@@ -1180,6 +1362,9 @@ export default function WeekendMedleyView({
               exit={{ opacity: 0 }}
               className="absolute inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
             >
+              {/* Premium particle scatter feedback */}
+              <ConfettiCanvas active={showDrawModal} />
+
               <motion.div
                 initial={{ scale: 0.9, rotateY: 90 }}
                 animate={{ scale: 1, rotateY: 0 }}
@@ -1584,11 +1769,6 @@ export default function WeekendMedleyView({
                     <div className="w-16 h-[1.5px] bg-yellow-500/30 mx-auto mt-2" />
                   </div>
 
-                  {/* Stamp Graphic Simulation overlay */}
-                  <div className="absolute top-14 right-4 w-12 h-12 border-2 border-red-500/80 rounded-full flex items-center justify-center transform rotate-12 scale-90 select-none pointer-events-none">
-                    <span className="text-[7.5px] text-red-500 font-serif font-black text-center leading-tight">周末历史<br />连携印赏</span>
-                  </div>
-
                   {/* Body textuals */}
                   <div className="mt-4 space-y-1.5 pt-1 text-center flex flex-col items-center">
                     <img 
@@ -1597,9 +1777,7 @@ export default function WeekendMedleyView({
                       className="w-10 h-10 rounded-full border border-yellow-500/40 object-cover shadow-md mb-1"
                       referrerPolicy="no-referrer"
                     />
-                    <span className="text-[9px] text-slate-400">华夏之美 • 记忆旅脉勋授</span>
                     <h4 className="text-sm font-black text-white">{`木小六`}</h4>
-                    <p className="text-[8.5px] text-slate-500 leading-normal max-w-[200px] mx-auto mt-1">在古寺、皇城、旧河岸间奔跑，您已在这座城市完成了汗点结业探索。</p>
                   </div>
 
                   {/* Highlights statistics row */}
