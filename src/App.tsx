@@ -141,18 +141,21 @@ export default function App() {
             const isActive = activeTab === tab.id;
             const Icon = tab.icon;
             return (
-              <button
+              <motion.button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex flex-col items-center space-y-1 transition-colors ${
-                  isActive ? 'text-cyan-400' : 'text-slate-500 hover:text-white'
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92, y: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className={`flex flex-col items-center space-y-1 transition-colors focus:outline-none ${
+                  isActive ? 'text-cyan-400' : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
                 <div className="w-6 h-6 flex items-center justify-center">
-                  <Icon size={20} className={isActive ? 'drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]' : ''} />
+                  <Icon size={20} className={isActive ? 'drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] text-cyan-400 transition-all' : 'transition-colors'} />
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest">{tab.label}</span>
-              </button>
+              </motion.button>
             );
           })}
         </div>
