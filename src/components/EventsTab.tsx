@@ -44,7 +44,7 @@ export default function EventsTab({ onSelectMedley }: EventsTabProps) {
             </h2>
             <div className="flex items-center justify-between">
               <p className="text-emerald-200/60 text-[11px] max-w-[65%] leading-relaxed line-clamp-2">
-                选取3个城市经典 memory 路线，完成后可抽取现金奖励！
+                选取3个城市经典记忆路线，完成后可抽取现金奖励！
               </p>
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
