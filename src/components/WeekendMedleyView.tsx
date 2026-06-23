@@ -2132,15 +2132,15 @@ export default function WeekendMedleyView({
               <h3 className="text-base font-black text-white px-2 tracking-wide">🏆 周末城市记忆串烧已完成！</h3>
               <p className="text-[10px] text-yellow-400/80 font-black mt-1 font-mono tracking-widest uppercase">COMBO RUN COMPLETED SUCCESS</p>
 
-              <div className="my-5 space-y-2 text-left bg-black/40 border border-white/5 p-4 rounded-2xl">
+              <div className="my-5 space-y-1.5 text-left bg-black/40 border border-white/5 p-4 rounded-2xl">
                 <p className="text-xs text-slate-200 leading-relaxed font-bold">
                   恭喜探索家 <strong className="text-yellow-400">木小六</strong>！
                 </p>
                 <p className="text-[11px] text-slate-300 leading-relaxed font-semibold">
-                  您已圆满完成本次周末挑战！
+                  您已成功完成本次周末城市记忆串烧。
                 </p>
                 <p className="text-[11px] text-slate-400 leading-relaxed font-bold">
-                  🏅 专属荣誉勋章已淬炼完成，1次抽奖取现机会已帮您解锁，快去夺取红包余额吧！
+                  🎁 1次抽奖取现机会已帮您解锁，快去抽取您的专属红包吧！
                 </p>
               </div>
 
