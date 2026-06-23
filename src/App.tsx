@@ -16,6 +16,7 @@ import WeekendMedleyView from './components/WeekendMedleyView';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const [showEventsBadge, setShowEventsBadge] = useState(true);
   const [showIntro, setShowIntro] = useState(true);
   const [fullScreenPage, setFullScreenPage] = useState<{type: 'cityRoutes' | 'routeDetail' | 'runPlayback' | 'litRecords' | 'leaderboard' | 'weekendMedley', data?: any} | null>(null);
 
@@ -143,16 +144,24 @@ export default function App() {
             return (
               <motion.button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  if (tab.id === 'events') {
+                    setShowEventsBadge(false);
+                  }
+                }}
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.92, y: 1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className={`flex flex-col items-center space-y-1 transition-colors focus:outline-none ${
+                className={`flex flex-col items-center space-y-1 transition-colors focus:outline-none relative ${
                   isActive ? 'text-cyan-400' : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
-                <div className="w-6 h-6 flex items-center justify-center">
+                <div className="w-6 h-6 flex items-center justify-center relative">
                   <Icon size={20} className={isActive ? 'drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] text-cyan-400 transition-all' : 'transition-colors'} />
+                  {tab.id === 'events' && showEventsBadge && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border border-black shadow-[0_0_6px_rgba(244,63,94,0.8)]" />
+                  )}
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest">{tab.label}</span>
               </motion.button>

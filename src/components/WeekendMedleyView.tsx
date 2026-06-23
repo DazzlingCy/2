@@ -251,7 +251,7 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
   }
 ];
 
-const LOTTERY_PRIZES = [0.88, 1.88, 2.88, 6.66, 8.88, 18.88];
+const LOTTERY_PRIZES = [0.88, 1.88, 2.88, 5.88, 8.88, 18.88];
 
 export interface GlobalDrawRecord {
   id: string;
@@ -261,22 +261,22 @@ export interface GlobalDrawRecord {
   isCurrentUser?: boolean;
 }
 
-export const generateMockDrawRecords = (): GlobalDrawRecord[] => {
+export const generateMockDrawRecords = (amounts?: number[]): GlobalDrawRecord[] => {
   const nicknames = [
     '王*明', '李*超', '张*洋', '刘*芳', '陈*杰', '杨*雪', '黄*国', '周*杰', 
     '跑者阿飞', '追梦森林', '风一样的少年', '步履不停', '快乐大步走', '里约晨跑者',
     '西子踏歌', '山城背影', '奔跑的椰子'
   ];
   
-  // Weighted selection based on new probabilities:
-  // 0.88: 20%, 1.88: 25%, 2.88: 25%, 6.66: 15%, 8.88: 12%, 18.88: 3%
+  // Weighted selection based on new precise probabilities matching 50 draws pool:
+  // 0.88 (4%), 1.88 (40%), 2.88 (30%), 5.88 (12%), 8.88 (10%), 18.88 (4%)
   const getRandomPrize = () => {
     const rand = Math.random() * 100;
-    if (rand < 20) return 0.88;
-    if (rand < 45) return 1.88;
-    if (rand < 70) return 2.88;
-    if (rand < 85) return 6.66;
-    if (rand < 97) return 8.88;
+    if (rand < 4) return 0.88;
+    if (rand < 44) return 1.88;
+    if (rand < 74) return 2.88;
+    if (rand < 86) return 5.88;
+    if (rand < 96) return 8.88;
     return 18.88;
   };
 
@@ -289,10 +289,11 @@ export const generateMockDrawRecords = (): GlobalDrawRecord[] => {
   return Array.from({ length: 15 }, (_, i) => {
     const rIdx = Math.floor(Math.random() * nicknames.length);
     const tStr = times[Math.min(i, times.length - 1)];
+    const prize = amounts && amounts[i] !== undefined ? amounts[i] : getRandomPrize();
     return {
       id: `mock-${i}-${Math.random()}`,
       nickname: nicknames[(rIdx + i) % nicknames.length],
-      amount: getRandomPrize(),
+      amount: prize,
       time: tStr
     };
   });
@@ -302,7 +303,7 @@ const WHEEL_SECTORS = [
   { value: 0.88, type: 'envelope' },
   { value: 1.88, type: 'envelope' },
   { value: 2.88, type: 'envelope' },
-  { value: 6.66, type: 'envelope' },
+  { value: 5.88, type: 'envelope' },
   { value: 8.88, type: 'envelope' },
   { value: 18.88, type: 'envelope' }
 ];
@@ -449,17 +450,51 @@ export default function WeekendMedleyView({
   onNavigateToRouteDetail
 }: WeekendMedleyViewProps) {
   const [viewMode, setViewMode] = useState<'main' | 'selection' | 'lottery'>('main');
+  const [draftRouteIds, setDraftRouteIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (viewMode === 'selection') {
+      setDraftRouteIds(selectedRouteIds);
+    }
+  }, [viewMode]);
+
   const [candidates, setCandidates] = useState<MedleyRouteItem[]>(() => {
     return MEDLEY_CANDIDATE_ROUTES.slice(0, 5);
   });
   const [selectError, setSelectError] = useState<string | null>(null);
-  const [poolBalance, setPoolBalance] = useState<number>(() => {
-    const saved = localStorage.getItem('weekend_lottery_pool_balance_v2');
-    if (saved) return parseFloat(saved);
-    const initial = 200.00;
-    localStorage.setItem('weekend_lottery_pool_balance_v2', initial.toString());
-    return initial;
+
+  const [remainingPrizes, setRemainingPrizes] = useState<number[]>(() => {
+    const saved = localStorage.getItem('weekend_lottery_remaining_prizes_v3');
+    if (saved) return JSON.parse(saved);
+    
+    // Exactly 50 opportunities, summing to exactly 200元
+    const pool = [
+      ...Array(2).fill(18.88),
+      ...Array(5).fill(8.88),
+      ...Array(6).fill(5.88),
+      ...Array(15).fill(2.88),
+      ...Array(20).fill(1.88),
+      ...Array(2).fill(0.88)
+    ];
+    // Shuffle the exact 50 entries
+    const shuffled = pool.sort(() => Math.random() - 0.5);
+    // 15 entries pre-drawn for mock global records
+    const preDrawn = shuffled.slice(0, 15);
+    const remaining = shuffled.slice(15);
+    
+    localStorage.setItem('weekend_lottery_remaining_prizes_v3', JSON.stringify(remaining));
+    
+    // Consistent mock data based on the 15 pre-drawn entries
+    const mocks = generateMockDrawRecords(preDrawn);
+    localStorage.setItem('weekend_medley_global_draw_records_v1', JSON.stringify(mocks));
+    
+    return remaining;
   });
+
+  const [simulateEmptyLottery, setSimulateEmptyLottery] = useState<boolean>(false);
+  const activeRemainingPrizes = simulateEmptyLottery ? [] : remainingPrizes;
+  const poolBalance = activeRemainingPrizes.reduce((sum, val) => sum + val, 0);
+
   const [globalRecords, setGlobalRecords] = useState<GlobalDrawRecord[]>(() => {
     const saved = localStorage.getItem('weekend_medley_global_draw_records_v1');
     if (saved) return JSON.parse(saved);
@@ -511,7 +546,8 @@ export default function WeekendMedleyView({
   const [wheelRotation, setWheelRotation] = useState<number>(0);
 
   // Helper check if selected
-  const isRouteSelected = (id: string) => selectedRouteIds.includes(id);
+  const activeRouteIds = viewMode === 'selection' ? draftRouteIds : selectedRouteIds;
+  const isRouteSelected = (id: string) => activeRouteIds.includes(id);
 
   const selectedItems = MEDLEY_CANDIDATE_ROUTES.filter(route => isRouteSelected(route.id));
   const completedCount = selectedItems.filter(item => completedRouteIds.includes(item.id)).length;
@@ -539,27 +575,25 @@ export default function WeekendMedleyView({
 
     const isSelected = isRouteSelected(route.id);
     if (isSelected) {
-      const updated = selectedRouteIds.filter(id => id !== route.id);
-      onUpdateState({ selectedRouteIds: updated });
+      const updated = activeRouteIds.filter(id => id !== route.id);
+      if (viewMode === 'selection') {
+        setDraftRouteIds(updated);
+      } else {
+        onUpdateState({ selectedRouteIds: updated });
+      }
       setSelectError(null);
     } else {
-      if (selectedRouteIds.length >= 3) {
+      if (activeRouteIds.length >= 3) {
         setSelectError('最多只能选定 3 条记忆路线哦');
         return;
       }
-      
-      // Each city at most once checked
-      const hasCity = selectedRouteIds.some(id => {
-        const item = MEDLEY_CANDIDATE_ROUTES.find(r => r.id === id);
-        return item?.cityId === route.cityId;
-      });
 
-      if (hasCity) {
-        setSelectError(`您已选择了一条【${route.cityName}】的路线。每个城市至多选择一条记忆路线。`);
-        return;
+      const updated = [...activeRouteIds, route.id];
+      if (viewMode === 'selection') {
+        setDraftRouteIds(updated);
+      } else {
+        onUpdateState({ selectedRouteIds: updated });
       }
-
-      onUpdateState({ selectedRouteIds: [...selectedRouteIds, route.id] });
       setSelectError(null);
     }
   };
@@ -659,7 +693,7 @@ export default function WeekendMedleyView({
         ctx.fillStyle = '#E2E8F0';
         ctx.font = 'bold 13px sans-serif';
         ctx.fillText('探索里程汇总', 190, 325);
-        ctx.fillText('连携完成路线', 410, 325);
+        ctx.fillText('完成路线', 410, 325);
 
         ctx.fillStyle = '#22D3EE';
         ctx.font = 'bold 36px font-mono';
@@ -672,7 +706,7 @@ export default function WeekendMedleyView({
         ctx.fillStyle = '#F8FAFC';
         ctx.font = 'bold 16px sans-serif';
         ctx.textAlign = 'left';
-        ctx.fillText('🗺️ 已完成串烧连携路线:', 80, 445);
+        ctx.fillText('🗺️ 已完成路线:', 80, 445);
 
         selectedItems.forEach((route, idx) => {
           const yOffset = 475 + (idx * 75);
@@ -690,7 +724,7 @@ export default function WeekendMedleyView({
           // Route Meta text
           ctx.fillStyle = '#FFFFFF';
           ctx.font = 'bold 14px sans-serif';
-          ctx.fillText(`跑道 ${idx + 1} • ${route.cityName} · ${route.routeName}`, 105, yOffset + 24);
+          ctx.fillText(`路线 ${idx + 1} • ${route.cityName} · ${route.routeName}`, 105, yOffset + 24);
 
           ctx.fillStyle = '#94A3B8';
           ctx.font = '11px sans-serif';
@@ -781,32 +815,16 @@ export default function WeekendMedleyView({
 
   const handleSpinWheel = () => {
     if (lotteryChances <= 0 || isDrawing) return;
-    if (poolBalance <= 0) {
-      setSelectError('很抱歉，本期 200 元现金奖池已被全部抽空啦，请等待下期刷新或点击下方重置测试！');
+    if (activeRemainingPrizes.length === 0) {
+      setSelectError('很抱歉，本期现金奖池已被全部抽空啦，请等待下期刷新！');
       return;
     }
     
     setIsDrawing(true);
 
-    // Roll random award value with proper weighted distribution matching display rules for 6 sectors:
-    // 0.88 (20%), 1.88 (25%), 2.88 (25%), 6.66 (15%), 8.88 (12%), 18.88 (3%)
-    const rand = Math.random() * 100;
-    let winnerIdx = 0;
-    if (rand < 20) {
-      winnerIdx = 0; // 0.88
-    } else if (rand < 45) {
-      winnerIdx = 1; // 1.88
-    } else if (rand < 70) {
-      winnerIdx = 2; // 2.88
-    } else if (rand < 85) {
-      winnerIdx = 3; // 6.66
-    } else if (rand < 97) {
-      winnerIdx = 4; // 8.88
-    } else {
-      winnerIdx = 5; // 18.88
-    }
-
-    const rolledValue = LOTTERY_PRIZES[winnerIdx];
+    // Roll random award value from pre-shuffled remainingPrizes pool / active pool
+    const rolledValue = activeRemainingPrizes[0];
+    const winnerIdx = Math.max(0, LOTTERY_PRIZES.indexOf(rolledValue));
 
     // Compute cumulative rotation to point winnerIdx at visual TOP
     const baseRotation = wheelRotation - (wheelRotation % 360);
@@ -822,10 +840,10 @@ export default function WeekendMedleyView({
       setRecentDrawReward(rolledValue);
       setIsDrawing(false);
       
-      // Deduct from pool balance
-      const newBalance = Math.max(0, poolBalance - rolledValue);
-      setPoolBalance(newBalance);
-      localStorage.setItem('weekend_lottery_pool_balance_v2', newBalance.toString());
+      // Deduct from remaining prizes pool
+      const nextRemaining = remainingPrizes.slice(1);
+      setRemainingPrizes(nextRemaining);
+      localStorage.setItem('weekend_lottery_remaining_prizes_v3', JSON.stringify(nextRemaining));
 
       const newUserRecord: GlobalDrawRecord = {
         id: `user-${Date.now()}`,
@@ -855,6 +873,9 @@ export default function WeekendMedleyView({
   const handleActionClick = () => {
     if (selectedRouteIds.length < 3) {
       setViewMode('selection');
+    } else if (activeRemainingPrizes.length === 0) {
+      setSelectError('很抱歉，本期现金奖池已被全部抢空，本期活动暂时无法继续挑战或抽奖！');
+      return;
     } else if (!activityStarted) {
       startMedleyCombo();
     } else {
@@ -879,14 +900,14 @@ export default function WeekendMedleyView({
             exit={{ opacity: 0 }}
             className="absolute inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4"
           >
-            {/* Header section of poster modal */}
-            <div className="flex justify-between items-center py-2 border-b border-white/5 shrink-0">
-              <span className="text-xs font-black text-slate-300">🖼️ 串烧结业荣耀海报</span>
+            {/* Header section of poster modal - Clean and borderless with title removed as requested */}
+            <div className="flex justify-end items-center py-2 shrink-0">
               <button 
                 onClick={() => setShowSharePosterModal(false)}
-                className="p-1 hover:bg-white/10 rounded-full text-slate-400"
+                className="p-1 px-2.5 hover:bg-white/10 rounded-full text-slate-400 font-medium text-xs flex items-center gap-1 active:scale-95 transition-all"
               >
-                <X size={18} />
+                <span>关闭</span>
+                <X size={16} />
               </button>
             </div>
 
@@ -898,65 +919,85 @@ export default function WeekendMedleyView({
                   <p className="text-xs text-slate-400 font-bold">金墨浸染海报渲染中...</p>
                 </div>
               ) : (
-                <div className="relative max-w-[280px] w-full max-h-[80vh] bg-gradient-to-b from-[#090F1B] to-[#020305] rounded-2xl border border-yellow-500/40 p-4 font-sans text-left overflow-y-auto hide-scrollbar shadow-inner shadow-2xl">
+                <div className="relative max-w-[290px] w-full max-h-[82vh] bg-gradient-to-b from-[#0d1527] via-[#050914] to-[#020306] rounded-3xl border border-amber-500/30 p-5 font-sans text-left overflow-y-auto hide-scrollbar shadow-[0_0_50px_rgba(0,0,0,0.85),0_0_25px_rgba(245,208,110,0.06)] relative overflow-hidden">
+                  {/* Glowing ambient dots in background */}
+                  <div className="absolute -top-10 -left-10 w-24 h-24 rounded-full bg-amber-500/5 blur-3xl pointer-events-none" />
+                  <div className="absolute -bottom-10 -right-10 w-24 h-24 rounded-full bg-cyan-500/5 blur-3xl pointer-events-none" />
+
                   {/* Miniature Poster Simulation rendering identical output as canvas */}
                   <div className="text-center py-1">
-                    <span className="text-[7.5px] text-slate-500 tracking-wider font-mono block">WEEKEND MEMORY</span>
-                    <h3 className="text-sm font-black text-[#f5d06e] mt-1 tracking-wider">城市记忆串烧・结业荣耀</h3>
-                    <div className="w-16 h-[1.5px] bg-yellow-500/30 mx-auto mt-2" />
+                    <span className="text-[7.5px] text-amber-500/80 tracking-widest font-mono block font-black">WEEKEND MEMORY</span>
+                    <h3 className="text-sm font-black bg-gradient-to-r from-amber-200 via-amber-300 to-[#ffe285] bg-clip-text text-transparent mt-1 tracking-wider filter drop-shadow-[0_2px_4px_rgba(245,208,110,0.15)]">城市记忆串烧・结业荣耀</h3>
+                    <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent mx-auto mt-2" />
                   </div>
 
-                  {/* Body textuals */}
-                  <div className="mt-4 space-y-1.5 pt-1 text-center flex flex-col items-center">
-                    <img 
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full border border-yellow-500/40 object-cover shadow-md mb-1"
-                      referrerPolicy="no-referrer"
-                    />
-                    <h4 className="text-sm font-black text-white">{`木小六`}</h4>
+                  {/* Body textuals with avatar badge */}
+                  <div className="mt-3.5 space-y-1.5 pt-1 text-center flex flex-col items-center">
+                    <div className="relative">
+                      <img 
+                        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
+                        alt="avatar"
+                        className="w-11 h-11 rounded-full border-2 border-amber-500/40 object-cover shadow-lg shadow-amber-500/10"
+                        referrerPolicy="no-referrer"
+                      />
+                      <span className="absolute -bottom-1 -right-1 px-1 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-[6px] font-black text-slate-950 scale-90 border border-slate-950 leading-none">LV2</span>
+                    </div>
+                    <span className="text-xs font-black text-slate-100">{`木小六`}</span>
                   </div>
 
                   {/* Highlights statistics row */}
-                  <div className="my-3.5 bg-[#0f172a] p-2 rounded-xl grid grid-cols-2 text-center border border-white/5 select-none">
+                  <div className="my-4 bg-gradient-to-r from-slate-950 to-[#0e1628] p-2.5 rounded-2xl grid grid-cols-2 text-center border border-white/5 shadow-inner relative overflow-hidden">
+                    <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/5" />
                     <div>
-                      <span className="text-[8.5px] text-slate-400 block font-bold">累计公里</span>
-                      <strong className="text-xs text-cyan-400 font-mono">{totalMedleyDistance} KM</strong>
+                      <span className="text-[8.5px] text-slate-400 block font-bold mb-0.5">累计总公里</span>
+                      <strong className="text-xs font-black text-cyan-400 font-mono tracking-tight drop-shadow-[0_0_8px_rgba(34,211,238,0.2)]">{totalMedleyDistance} KM</strong>
                     </div>
                     <div>
-                      <span className="text-[8.5px] text-slate-400 block font-bold">连携路线</span>
-                      <strong className="text-xs text-emerald-400">{completedCount} / 3</strong>
+                      <span className="text-[8.5px] text-slate-400 block font-bold mb-0.5">完成路线</span>
+                      <strong className="text-xs font-black text-emerald-400 tracking-tight drop-shadow-[0_0_8px_rgba(16,185,129,0.2)]">{completedCount} / 3</strong>
                     </div>
                   </div>
 
                   {/* Mini cards for 3 roads */}
                   <div className="space-y-2 select-none">
-                    <span className="text-[8px] text-slate-400 font-bold block">🗺️ 连携藏品印迹:</span>
+                    <span className="text-[8.5px] text-slate-300 font-extrabold block tracking-wider">🗺️ 已完成路线:</span>
                     {selectedItems.map((item, id) => {
                       const isDone = completedRouteIds.includes(item.id);
                       return (
-                        <div key={item.id} className="bg-black/30 p-2 rounded-xl border border-white/5 flex items-center justify-between text-[8.5px]">
-                          <span className="text-slate-200 truncate pr-2 font-bold">跑道 {id+1}: {item.cityName}·{item.routeName}</span>
-                          <span className={isDone ? 'text-emerald-400 font-black' : 'text-slate-500'}>
-                            {isDone ? '● 已达成' : '进行中'}
-                          </span>
+                        <div 
+                          key={item.id} 
+                          className={`p-2.5 rounded-xl border flex items-center justify-between text-[8.5px] transition-all relative overflow-hidden ${
+                            isDone 
+                              ? 'bg-emerald-950/20 border-emerald-500/20 text-slate-100 shadow-[0_2px_8px_rgba(16,185,129,0.03)]' 
+                              : 'bg-black/30 border-white/5 text-slate-400'
+                          }`}
+                        >
+                          {/* Accent Color Left Strip */}
+                          <div className={`absolute left-0 top-0 bottom-0 w-[3px] ${isDone ? 'bg-emerald-500' : 'bg-slate-700'}`} />
+                          
+                          <div className="flex flex-col pl-1 text-left truncate w-full">
+                            <span className={`font-black tracking-wide truncate ${isDone ? 'text-slate-100' : 'text-slate-400'}`}>
+                              路线 {id+1}: {item.cityName}·{item.routeName}
+                            </span>
+                            <span className="text-[7.5px] text-slate-500 truncate mt-0.5 font-medium">{item.spots}</span>
+                          </div>
                         </div>
                       );
                     })}
                   </div>
 
                   {/* QR code footer sim */}
-                  <div className="mt-4 pt-3.5 border-t border-white/10 flex justify-between items-center">
-                    <div>
-                      <span className="text-[8.5px] text-slate-400 font-bold block">微信运动·周末串道</span>
-                      <span className="text-[7.5px] text-slate-500 block leading-normal mt-0.5">扫码一同踏上历史探索印记</span>
+                  <div className="mt-4 pt-3 border-t border-white/10 flex justify-between items-center">
+                    <div className="max-w-[160px]">
+                      <span className="text-[8.5px] text-slate-400 font-extrabold block">微信运动·周末城市记忆串烧</span>
+                      <span className="text-[7.5px] text-slate-500 block leading-relaxed mt-1 font-semibold">扫码加入探索，一同踏上历史探索印记</span>
                     </div>
                     {/* Simulated white pixel QR block */}
-                    <div className="w-8 h-8 bg-white p-0.5 flex flex-wrap gap-0.5">
-                      <div className="w-3 h-3 bg-slate-900" />
-                      <div className="w-3 h-3 bg-slate-900" style={{marginLeft: 'auto'}} />
-                      <div className="w-3 h-3 bg-slate-900" style={{marginTop: 'auto'}} />
-                      <div className="w-3 h-3 bg-slate-500" style={{marginTop: 'auto', marginLeft: 'auto'}} />
+                    <div className="w-9 h-9 bg-gradient-to-br from-white to-slate-100 p-0.5 rounded-md shadow-lg flex flex-wrap gap-[1px] justify-between items-between">
+                      <div className="w-3.5 h-3.5 bg-slate-900 rounded-[1px] m-[1px] border border-white" />
+                      <div className="w-3.5 h-3.5 bg-slate-900 rounded-[1px] m-[1px] border border-white ml-auto" />
+                      <div className="w-3.5 h-3.5 bg-slate-900 rounded-[1px] m-[1px] border border-white mt-auto" />
+                      <div className="w-3.5 h-3.5 bg-slate-500 rounded-[1px] m-[1px] mt-auto ml-auto" />
                     </div>
                   </div>
                 </div>
@@ -1061,7 +1102,7 @@ export default function WeekendMedleyView({
           <div className="text-center">
             <h2 className="text-sm font-black tracking-widest text-[#f5d06e] flex items-center justify-center gap-1.5">
               <Sparkles size={15} className="text-[#f5d06e]" />
-              自定串烧跑道
+              自定串烧路线
             </h2>
           </div>
           
@@ -1080,8 +1121,7 @@ export default function WeekendMedleyView({
               <span>🗺️</span> 串烧配制指南
             </h4>
             <p className="text-[11px] text-slate-300 mt-1.5 leading-relaxed font-semibold">
-              请点击下方列表任意选择 <strong className="text-[#f5d06e]">3 条</strong> 路线配制专属于您的周末记忆。出于时空多样性约束，
-              <strong className="text-cyan-400">每个城市至多可选定 1 条路线</strong>。
+              请点击下方列表任意选择 <strong className="text-[#f5d06e]">3 条</strong> 路线配制专属于您的周末记忆。
             </p>
           </div>
 
@@ -1089,15 +1129,15 @@ export default function WeekendMedleyView({
           <div className="bg-slate-900/40 border border-white/5 p-3 rounded-2xl text-left">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-[11px] text-slate-400 font-bold block">当前已挑选跑道</span>
+                <span className="text-[11px] text-slate-400 font-bold block">当前已挑选路线</span>
               </div>
               <span className="font-mono text-sm font-black bg-cyan-950/80 text-cyan-400 px-3.5 py-1 rounded-xl border border-cyan-500/35 shrink-0">
-                {selectedRouteIds.length} / 3
+                {activeRouteIds.length} / 3
               </span>
             </div>
             
             {/* Displaying actually selected items clearly so they can switch batches without confusion! */}
-            {selectedRouteIds.length > 0 ? (
+            {activeRouteIds.length > 0 ? (
               <div className="mt-2.5 pt-2.5 border-t border-white/5 flex flex-row overflow-x-auto whitespace-nowrap gap-1.5 pb-1 select-none overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {selectedItems.map((item) => (
                   <span 
@@ -1116,7 +1156,7 @@ export default function WeekendMedleyView({
               </div>
             ) : (
               <div className="mt-2.5 pt-2.5 border-t border-white/5 text-[10px] text-slate-500/90 border-dashed select-none leading-normal h-[34px] flex flex-col justify-center font-bold">
-                <span className="opacity-75">暂未选定任何跑道</span>
+                <span className="opacity-75">暂未选定任何路线</span>
                 <span className="opacity-50 text-[9px] mt-0.5">（请点击下方候选列表，任选 3 条即可开启连携）</span>
               </div>
             )}
@@ -1124,7 +1164,7 @@ export default function WeekendMedleyView({
 
           {/* Candidates Shuffling Header Row */}
           <div className="flex items-center justify-between px-1 mt-2">
-            <span className="text-[11px] text-slate-400 font-bold">候选跑道（每批 5 条）</span>
+            <span className="text-[11px] text-slate-400 font-bold">候选路线（每批 5 条）</span>
             <button
               onClick={handleRefreshCandidates}
               className="bg-cyan-500/10 hover:bg-cyan-500/20 active:scale-95 border border-cyan-500/25 text-cyan-400 text-[10px] font-black px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all shadow-md"
@@ -1183,7 +1223,11 @@ export default function WeekendMedleyView({
           
           <button
             onClick={() => {
-              onUpdateState({ selectedRouteIds: [] });
+              if (viewMode === 'selection') {
+                setDraftRouteIds([]);
+              } else {
+                onUpdateState({ selectedRouteIds: [] });
+              }
               setSelectError(null);
             }}
             className="px-4 py-3 bg-[#0d1624] border border-white/5 hover:border-white/10 hover:bg-[#142334] rounded-2xl text-xs font-bold text-slate-400 hover:text-slate-200 transition-all shrink-0 animate-pulse"
@@ -1193,16 +1237,20 @@ export default function WeekendMedleyView({
 
           <button
             onClick={() => {
-              if (selectedRouteIds.length !== 3) {
+              if (activeRouteIds.length !== 3) {
                 setSelectError('必须要选择恰好 3 条路线才能确认配置并保存哦');
                 return;
               }
-              onUpdateState({ activityStarted: true }); // Save and automatically start the activity/lock so that next click is not required
+              // Commit the selection and start the activity loop
+              onUpdateState({ 
+                selectedRouteIds: activeRouteIds, 
+                activityStarted: true 
+              });
               setViewMode('main');
               setSelectError(null);
             }}
             className={`flex-1 py-3.5 rounded-2xl font-extrabold text-[13.5px] transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-md ${
-              selectedRouteIds.length === 3
+              activeRouteIds.length === 3
                 ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black shadow-[0_4px_15px_rgba(6,182,212,0.25)]'
                 : 'bg-slate-800 text-slate-500 cursor-not-allowed'
             }`}
@@ -1266,7 +1314,17 @@ export default function WeekendMedleyView({
             </p>
           </div>
           
-          <div className="w-10" />
+          <button
+            onClick={() => setSimulateEmptyLottery(prev => !prev)}
+            className={`px-2 py-1 rounded-lg text-[9px] font-black border transition-all active:scale-95 flex items-center gap-1 shrink-0 ${
+              simulateEmptyLottery 
+                ? 'bg-rose-950/50 border-rose-500/40 text-rose-400' 
+                : 'bg-zinc-900 border-zinc-800 text-slate-400 hover:text-slate-200'
+            }`}
+            title="一键切模：模拟奖池已抽空状态"
+          >
+            <span>{simulateEmptyLottery ? '已抽空' : '模拟抽空'}</span>
+          </button>
         </div>
 
         {/* Scrollable Sub-screen Inner */}
@@ -1277,23 +1335,66 @@ export default function WeekendMedleyView({
             
             {/* Sleek, simplified cash pool status row */}
             <div className="flex flex-col items-center mb-6 space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#ffe082]/15 bg-[#1a1710]/80 text-[#f5cb4e] text-[10px] font-black tracking-wider uppercase">
-                <Sparkles size={10} className="text-[#f5cb4e] animate-pulse" />
-                <span>限时现金奖池 ¥200 (预计 50 次抽奖机会，抽空即止)</span>
-              </div>
+              {activeRemainingPrizes.length === 0 ? (
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rose-500/15 bg-rose-950/20 text-rose-400 text-[10px] font-black tracking-wider uppercase">
+                  <AlertCircle size={10} className="text-rose-400 animate-pulse" />
+                  <span>本期 50 次抽奖已全部抽满抢空！</span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#ffe082]/15 bg-[#1a1710]/80 text-[#f5cb4e] text-[10px] font-black tracking-wider uppercase">
+                  <Sparkles size={10} className="text-[#f5cb4e] animate-pulse" />
+                  <span>50次抽奖机会，抽空即止，先到先得！</span>
+                </div>
+              )}
               
-              <div className="w-full max-w-[240px] flex justify-between items-center text-[10px] text-zinc-400 bg-black/20 border border-white/5 rounded-xl px-3.5 py-2 font-bold shadow-inner">
-                <span className="flex items-center gap-1 text-zinc-500">
-                  当前剩余:
-                  <span className="text-[#ffe285] font-black font-mono text-[11px]">¥{poolBalance.toFixed(2)}</span>
-                </span>
-                <div className="h-3 w-px bg-zinc-800" />
-                <span>已瓜分 {((200 - poolBalance) / 200 * 100).toFixed(1)}%</span>
-              </div>
+              {(() => {
+                const remainingChances = activeRemainingPrizes.length;
+                const usedChances = 50 - remainingChances;
+                return (
+                   <div className="w-full max-w-[240px] flex justify-between items-center text-[10px] text-zinc-400 bg-black/20 border border-white/5 rounded-xl px-3.5 py-2 font-bold shadow-inner">
+                    <span className="flex items-center gap-1 text-zinc-500">
+                      当前剩余:
+                      <span className={`${remainingChances === 0 ? 'text-rose-400' : 'text-[#ffe285]'} font-black font-mono text-[11px]`}>{remainingChances} 次</span>
+                    </span>
+                    <div className="h-3 w-px bg-zinc-800" />
+                    <span>已抽 {usedChances} 次</span>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* STUNNING 3D-GLOWING BIG TURNTABLE (DA ZHUAN PAN) */}
             <div className="relative w-72 h-72 sm:w-80 sm:h-80 mx-auto select-none mt-4 mb-4">
+              
+              {/* Prize Pool Completely Exhausted Overlay */}
+              {activeRemainingPrizes.length === 0 && (
+                <div className="absolute inset-0 bg-black/85 backdrop-blur-[3px] rounded-full z-30 flex flex-col items-center justify-center text-center p-6 border-4 border-rose-900/40 shadow-[0_0_25px_rgba(239,68,68,0.15)]">
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', delay: 0.1 }}
+                    className="w-16 h-16 rounded-full bg-rose-950/90 border border-rose-500/40 flex items-center justify-center text-rose-400 mb-3 shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+                  >
+                    <AlertCircle size={32} className="text-rose-500 animate-pulse" />
+                  </motion.div>
+                  <motion.h4 
+                    initial={{ y: 5, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-base font-black text-rose-400 tracking-wide"
+                  >
+                    本期奖池已抽空
+                  </motion.h4>
+                  <motion.p 
+                    initial={{ y: 5, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-[10.5px] text-zinc-400 mt-2 max-w-[180px] leading-relaxed font-medium"
+                  >
+                    50次现金抽奖名额已全部发放完毕。下期活动正在筹备中，敬请期待！
+                  </motion.p>
+                </div>
+              )}
               
               {/* Outer Stereoscopic Metallic Gold Flaps/Tassels mimicking the mockup earmuffs */}
               <div className="absolute top-1/2 -translate-y-1/2 -left-4 w-5 h-16 rounded-l-xl bg-gradient-to-r from-red-700 to-amber-500 border-l-2 border-y-2 border-[#ffdf7e]/55 shadow-lg z-15" />
@@ -1521,12 +1622,12 @@ export default function WeekendMedleyView({
             {/* Six column horizontal layout cards */}
             <div className="grid grid-cols-6 gap-1 pt-0.5">
               {[
-                { val: 0.88, rate: '20%' },
-                { val: 1.88, rate: '25%' },
-                { val: 2.88, rate: '25%' },
-                { val: 6.66, rate: '15%' },
-                { val: 8.88, rate: '12%' },
-                { val: 18.88, rate: '3%' }
+                { val: 0.88, rate: '4%' },
+                { val: 1.88, rate: '40%' },
+                { val: 2.88, rate: '30%' },
+                { val: 5.88, rate: '12%' },
+                { val: 8.88, rate: '10%' },
+                { val: 18.88, rate: '4%' }
               ].map((p, idx) => (
                 <div 
                   key={idx}
@@ -1721,7 +1822,7 @@ export default function WeekendMedleyView({
 
             {/* Explanatory introduction text */}
             <p className="text-[11.5px] text-slate-300 leading-relaxed font-semibold mt-3 max-w-[340px] drop-shadow-sm">
-              🏃‍♂️ <b>周末城市记忆串烧</b>：自定义跨域 3 条精选跑道，在自然古迹间慢跑或漫步。每点亮 1 条路线即解锁 1 枚城市印章，全部达成即可解锁 100% 中奖的 <b>200元现金奖池红包余额抽奖</b> 机会！
+              🏃‍♂️ <b>周末城市记忆串烧</b>：自定义跨域 3 条精选路线，在自然古迹间慢跑或漫步。全部达成即可解锁 100% 中奖的现金奖池红包抽奖机会！总共50次抽奖机会，先到先得！
             </p>
 
             {/* Integrated activity opening schedule banner with custom thin borders */}
@@ -1812,7 +1913,7 @@ export default function WeekendMedleyView({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="bg-slate-800 text-[9px] text-[#f5d06e] font-black px-1.5 py-0.5 rounded shrink-0">
-                            跑道 {index + 1}
+                            路线 {index + 1}
                           </span>
                           <span className="text-[10px] text-slate-400 font-bold">{item.cityName}</span>
                         </div>
@@ -1827,11 +1928,22 @@ export default function WeekendMedleyView({
                             <span className="bg-emerald-950/80 border border-emerald-500/30 text-[#2ebd90] text-[9px] font-black px-2 py-0.5 rounded-md">已完成</span>
                           ) : (
                             <button 
-                              onClick={() => onNavigateToRouteDetail(item.cityId, item.routeIndex, item.image)}
-                              className="bg-[#26b180] hover:bg-[#1f936a] text-white text-[9.5px] font-black px-2.5 py-1 rounded-md flex items-center gap-0.5 active:scale-95 transition-all"
+                              onClick={() => {
+                                if (activeRemainingPrizes.length === 0) {
+                                  setSelectError('本期现金奖池已被全部抽空，无法继续挑战完成路线！');
+                                  return;
+                                }
+                                onNavigateToRouteDetail(item.cityId, item.routeIndex, item.image);
+                              }}
+                              className={`text-[9.5px] font-black px-2.5 py-1 rounded-md flex items-center gap-0.5 transition-all ${
+                                activeRemainingPrizes.length === 0
+                                  ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-white/5'
+                                  : 'bg-[#26b180] hover:bg-[#1f936a] text-white shadow-[0_2px_8px_rgba(38,177,128,0.2)] active:scale-95'
+                              }`}
+                              disabled={activeRemainingPrizes.length === 0}
                             >
-                              <Play size={8} className="fill-white" />
-                              <span>开始</span>
+                              <Play size={8} className={activeRemainingPrizes.length === 0 ? "fill-zinc-500 text-zinc-500" : "fill-white"} />
+                              <span>{activeRemainingPrizes.length === 0 ? '已抽空' : '开始'}</span>
                             </button>
                           )
                         ) : (
@@ -1856,7 +1968,7 @@ export default function WeekendMedleyView({
                     className="w-full py-3 bg-[#05090f] hover:bg-[#152e46]/10 rounded-xl border border-dashed border-slate-800 hover:border-cyan-500/30 text-left pl-3 text-xs font-bold text-slate-500 hover:text-cyan-400 transition-all flex items-center gap-2"
                   >
                     <Plus size={14} />
-                    <span>继续添加记忆跑道 (还需选择 {3 - selectedRouteIds.length} 条)</span>
+                    <span>继续添加记忆路线 (还需选择 {3 - selectedRouteIds.length} 条)</span>
                   </button>
                 )}
               </div>
@@ -1873,7 +1985,7 @@ export default function WeekendMedleyView({
             <ul className="text-[11px] text-slate-400 space-y-2.5 font-bold leading-relaxed">
               <li className="flex gap-2">
                 <span className="text-[#f5d06e] shrink-0">1.</span>
-                <span>保存 3 条路线后，开始跑台挑战，路线中途不可修改。</span>
+                <span>保存 3 条路线后，开启路线串烧挑战，路线中途不可修改。</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-[#f5d06e] shrink-0">2.</span>
@@ -1882,6 +1994,10 @@ export default function WeekendMedleyView({
               <li className="flex gap-2">
                 <span className="text-[#f5d06e] shrink-0">3.</span>
                 <span>完成串烧或探索过程中，点击“分享海报”转发成果，可额外赠送 <strong className="text-cyan-400">1 次</strong> 大奖抽奖机会。</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[#f5d06e] shrink-0">4.</span>
+                <span className="text-rose-400/90">奖池清空后，不可继续参与活动！</span>
               </li>
             </ul>
           </div>
@@ -1902,18 +2018,26 @@ export default function WeekendMedleyView({
           <button
             onClick={handleActionClick}
             className={`flex-1 py-3.5 rounded-2xl font-black text-[13px] tracking-wide transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-md ${
-              selectedRouteIds.length < 3
-                ? 'bg-[#f5cb4e] hover:bg-[#dfb73c] text-slate-900 shadow-[0_4px_15px_rgba(245,203,78,0.25)]'
-                : !activityStarted
-                  ? 'bg-[#26b180] hover:bg-[#1f936a] text-white shadow-[0_4px_15px_rgba(38,177,128,0.25)]'
-                  : isMedleyAllCompleted
-                    ? 'bg-gradient-to-r from-[#eab308] to-[#f59e0b] hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black shadow-[0_4px_15px_rgba(234,179,8,0.3)] animate-pulse'
-                    : 'bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-black shadow-[0_4px_15px_rgba(6,182,212,0.25)]'
+              activeRemainingPrizes.length === 0
+                ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-white/5 shadow-inner'
+                : selectedRouteIds.length < 3
+                  ? 'bg-[#f5cb4e] hover:bg-[#dfb73c] text-slate-900 shadow-[0_4px_15px_rgba(245,203,78,0.25)]'
+                  : !activityStarted
+                    ? 'bg-[#26b180] hover:bg-[#1f936a] text-white shadow-[0_4px_15px_rgba(38,177,128,0.25)]'
+                    : isMedleyAllCompleted
+                      ? 'bg-gradient-to-r from-[#eab308] to-[#f59e0b] hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black shadow-[0_4px_15px_rgba(234,179,8,0.3)] animate-pulse'
+                      : 'bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-black shadow-[0_4px_15px_rgba(6,182,212,0.25)]'
             }`}
+            disabled={activeRemainingPrizes.length === 0}
           >
-            {selectedRouteIds.length < 3 ? (
+            {activeRemainingPrizes.length === 0 ? (
               <>
-                <span>📋 自定配制 3 条跑道</span>
+                <Gift size={14} className="stroke-[2.5] text-zinc-500" />
+                <span>🎁 本期奖池已抽空</span>
+              </>
+            ) : selectedRouteIds.length < 3 ? (
+              <>
+                <span>📋 自定配制 3 条路线</span>
               </>
             ) : !activityStarted ? (
               <>
