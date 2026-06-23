@@ -1157,7 +1157,7 @@ export default function WeekendMedleyView({
             ) : (
               <div className="mt-2.5 pt-2.5 border-t border-white/5 text-[10px] text-slate-500/90 border-dashed select-none leading-normal h-[34px] flex flex-col justify-center font-bold">
                 <span className="opacity-75">暂未选定任何路线</span>
-                <span className="opacity-50 text-[9px] mt-0.5">（请点击下方候选列表，任选 3 条即可开启连携）</span>
+                <span className="opacity-50 text-[9px] mt-0.5">（请点击下方候选列表，任选 3 条即可开启选取）</span>
               </div>
             )}
           </div>
