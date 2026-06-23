@@ -1578,7 +1578,7 @@ export default function WeekendMedleyView({
                         )}
                       </div>
                       <span className="text-[9.5px] text-zinc-500 font-medium block">
-                        {record.time} • 微信现金红包
+                        {record.time} • 红包余额
                       </span>
                     </div>
                   </div>
@@ -1720,8 +1720,8 @@ export default function WeekendMedleyView({
             </h1>
 
             {/* Explanatory introduction text */}
-            <p className="text-[11px] text-slate-300 leading-relaxed font-semibold mt-3 max-w-[340px] drop-shadow-sm">
-              这个周末，从古寺、皇城、旧街与河岸出发，把三座城市的历史片段串成一段奔跑记忆。每一条路线都是一枚城市印章，完成串烧后解锁现金抽奖。
+            <p className="text-[11.5px] text-slate-300 leading-relaxed font-semibold mt-3 max-w-[340px] drop-shadow-sm">
+              🏃‍♂️ <b>周末城市记忆串烧</b>：自定义跨域 3 条精选跑道，在自然古迹间慢跑或漫步。每点亮 1 条路线即解锁 1 枚城市印章，全部达成即可解锁 100% 中奖的 <b>200元现金奖池红包余额抽奖</b> 机会！
             </p>
 
             {/* Integrated activity opening schedule banner with custom thin borders */}
@@ -2016,7 +2016,7 @@ export default function WeekendMedleyView({
                   您已圆满完成本次周末挑战！
                 </p>
                 <p className="text-[11px] text-slate-400 leading-relaxed font-bold">
-                  🏅 专属荣誉勋章已淬炼完成，1次抽奖取现机会已帮您解锁，快去夺取现金红包吧！
+                  🏅 专属荣誉勋章已淬炼完成，1次抽奖取现机会已帮您解锁，快去夺取红包余额吧！
                 </p>
               </div>
 
