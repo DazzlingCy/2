@@ -492,6 +492,7 @@ export default function WeekendMedleyView({
   });
 
   const [simulateEmptyLottery, setSimulateEmptyLottery] = useState<boolean>(false);
+  const [simulateNotStarted, setSimulateNotStarted] = useState<boolean>(false);
   const activeRemainingPrizes = simulateEmptyLottery ? [] : remainingPrizes;
   const poolBalance = activeRemainingPrizes.reduce((sum, val) => sum + val, 0);
 
@@ -871,6 +872,10 @@ export default function WeekendMedleyView({
   };
 
   const handleActionClick = () => {
+    if (simulateNotStarted) {
+      setSelectError('很抱歉，本期活动暂未开始，请关注开放时间！');
+      return;
+    }
     if (selectedRouteIds.length < 3) {
       setViewMode('selection');
     } else if (activeRemainingPrizes.length === 0) {
@@ -1798,8 +1803,22 @@ export default function WeekendMedleyView({
               <ChevronLeft size={20} className="text-slate-200" />
             </button>
             
-            <div className="bg-[#12231c]/70 border border-emerald-500/20 px-3 py-1.5 rounded-full text-[10px] font-black text-emerald-400 tracking-wider flex items-center gap-1.5 shadow-[0_4px_12px_rgba(16,185,129,0.15)] select-none">
-              <span>📅 周末限时开放</span>
+            <div className="flex items-center gap-2 select-none">
+              <button
+                onClick={() => setSimulateNotStarted(prev => !prev)}
+                className={`px-2 py-1.5 rounded-full text-[9px] font-black border transition-all active:scale-95 flex items-center gap-1 shrink-0 shadow-md ${
+                  simulateNotStarted 
+                    ? 'bg-amber-950/50 border-amber-500/40 text-amber-400' 
+                    : 'bg-black/50 border-white/5 text-slate-400 hover:text-slate-200'
+                }`}
+                title="一键切换：模拟活动未开放状态"
+              >
+                <span>{simulateNotStarted ? '已设未开始' : '模拟未开始'}</span>
+              </button>
+
+              <div className="bg-[#12231c]/70 border border-emerald-500/20 px-3 py-1.5 rounded-full text-[10px] font-black text-emerald-400 tracking-wider flex items-center gap-1.5 shadow-[0_4px_12px_rgba(16,185,129,0.15)]">
+                <span>📅 周末限时开放</span>
+              </div>
             </div>
           </div>
 
@@ -1874,8 +1893,20 @@ export default function WeekendMedleyView({
               </span>
             </div>
 
-            {/* Dashed placeholder container if unselected */}
-            {selectedRouteIds.length === 0 ? (
+            {/* Dashed placeholder container if unselected or not started */}
+            {simulateNotStarted ? (
+              <div className="w-full py-10 rounded-2xl border border-dashed border-amber-500/20 bg-amber-950/5 flex flex-col items-center justify-center gap-2.5 select-none text-center">
+                <div className="w-11 h-11 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                  <Clock size={20} className="animate-pulse" />
+                </div>
+                <span className="text-[13px] font-black tracking-wider text-amber-400">
+                  本期活动暂未开始
+                </span>
+                <p className="text-[10px] text-slate-500 max-w-[220px] leading-normal font-bold">
+                  请关注活动开放时间
+                </p>
+              </div>
+            ) : selectedRouteIds.length === 0 ? (
               <button
                 onClick={() => setViewMode('selection')}
                 className="w-full py-8 focus:outline-none rounded-2xl border border-dashed border-[#f5d06e]/25 bg-[#060b13]/40 hover:bg-[#152e46]/10 flex flex-col items-center justify-center gap-2.5 group transition-all"
@@ -2018,19 +2049,26 @@ export default function WeekendMedleyView({
           <button
             onClick={handleActionClick}
             className={`flex-1 py-3.5 rounded-2xl font-black text-[13px] tracking-wide transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-md ${
-              activeRemainingPrizes.length === 0
+              simulateNotStarted
                 ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-white/5 shadow-inner'
-                : selectedRouteIds.length < 3
-                  ? 'bg-[#f5cb4e] hover:bg-[#dfb73c] text-slate-900 shadow-[0_4px_15px_rgba(245,203,78,0.25)]'
-                  : !activityStarted
-                    ? 'bg-[#26b180] hover:bg-[#1f936a] text-white shadow-[0_4px_15px_rgba(38,177,128,0.25)]'
-                    : isMedleyAllCompleted
-                      ? 'bg-gradient-to-r from-[#eab308] to-[#f59e0b] hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black shadow-[0_4px_15px_rgba(234,179,8,0.3)] animate-pulse'
-                      : 'bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-black shadow-[0_4px_15px_rgba(6,182,212,0.25)]'
+                : activeRemainingPrizes.length === 0
+                  ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-white/5 shadow-inner'
+                  : selectedRouteIds.length < 3
+                    ? 'bg-[#f5cb4e] hover:bg-[#dfb73c] text-slate-900 shadow-[0_4px_15px_rgba(245,203,78,0.25)]'
+                    : !activityStarted
+                      ? 'bg-[#26b180] hover:bg-[#1f936a] text-white shadow-[0_4px_15px_rgba(38,177,128,0.25)]'
+                      : isMedleyAllCompleted
+                        ? 'bg-gradient-to-r from-[#eab308] to-[#f59e0b] hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black shadow-[0_4px_15px_rgba(234,179,8,0.3)] animate-pulse'
+                        : 'bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-black shadow-[0_4px_15px_rgba(6,182,212,0.25)]'
             }`}
-            disabled={activeRemainingPrizes.length === 0}
+            disabled={simulateNotStarted || activeRemainingPrizes.length === 0}
           >
-            {activeRemainingPrizes.length === 0 ? (
+            {simulateNotStarted ? (
+              <>
+                <Clock size={14} className="stroke-[2.5] text-zinc-500" />
+                <span>⏳ 活动暂未开始</span>
+              </>
+            ) : activeRemainingPrizes.length === 0 ? (
               <>
                 <Gift size={14} className="stroke-[2.5] text-zinc-500" />
                 <span>🎁 本期奖池已抽空</span>
@@ -2059,13 +2097,22 @@ export default function WeekendMedleyView({
           {/* Social Share Poster Trigger Button */}
           <button
             onClick={() => {
+              if (simulateNotStarted) {
+                setSelectError('活动暂未开始，无法分享海报！');
+                return;
+              }
               setShowSharePosterModal(true);
               handleGeneratePoster();
             }}
-            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-[#0e1624] border border-white/5 hover:bg-[#142234] transition-colors"
-            title="生成结业分享海报"
+            disabled={simulateNotStarted}
+            className={`w-12 h-12 flex items-center justify-center rounded-2xl border transition-all ${
+              simulateNotStarted
+                ? 'bg-zinc-900/50 border-white/5 opacity-40 cursor-not-allowed text-zinc-600'
+                : 'bg-[#0e1624] border-white/5 hover:bg-[#142234] text-slate-300 active:scale-95'
+            }`}
+            title={simulateNotStarted ? "活动未开始" : "生成结业分享海报"}
           >
-            <Share2 className="text-slate-300" size={17} />
+            <Share2 size={17} />
           </button>
 
           {/* Gift Box button (Exclusively triggers viewMode to LOTTERY) */}
