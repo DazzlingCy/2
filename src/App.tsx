@@ -226,7 +226,7 @@ export default function App() {
                         if (prevCompleted.includes(activityKey)) return prevCompleted;
                         const nextCompleted = [...prevCompleted, activityKey];
                         if (nextCompleted.length === 3) {
-                          setMedleyLotteryChances(prevChances => prevChances + 1);
+                          setMedleyLotteryChances(prevChances => prevChances + 5);
                         }
                         return nextCompleted;
                       });

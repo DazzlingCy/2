@@ -251,7 +251,7 @@ export const MEDLEY_CANDIDATE_ROUTES: MedleyRouteItem[] = [
   }
 ];
 
-const LOTTERY_PRIZES = [0.88, 1.88, 2.88, 5.88, 8.88, 18.88];
+const LOTTERY_PRIZES = [0.18, 0.38, 0.88, 1.88, 5.88, 8.88];
 
 export interface GlobalDrawRecord {
   id: string;
@@ -268,16 +268,16 @@ export const generateMockDrawRecords = (amounts?: number[]): GlobalDrawRecord[] 
     '西子踏歌', '山城背影', '奔跑的椰子'
   ];
   
-  // Weighted selection based on new precise probabilities matching 50 draws pool:
-  // 0.88 (4%), 1.88 (40%), 2.88 (30%), 5.88 (12%), 8.88 (10%), 18.88 (4%)
+  // Weighted selection based on new precise probabilities matching 300 draws pool (summing to 200元):
+  // 0.18 (26.67%), 0.38 (49.33%), 0.88 (13.33%), 1.88 (8.33%), 5.88 (1.67%), 8.88 (0.67%)
   const getRandomPrize = () => {
     const rand = Math.random() * 100;
-    if (rand < 4) return 0.88;
-    if (rand < 44) return 1.88;
-    if (rand < 74) return 2.88;
-    if (rand < 86) return 5.88;
-    if (rand < 96) return 8.88;
-    return 18.88;
+    if (rand < 26.67) return 0.18;
+    if (rand < 76.00) return 0.38; // 26.67 + 49.33
+    if (rand < 89.33) return 0.88; // 76.00 + 13.33
+    if (rand < 97.66) return 1.88; // 89.33 + 8.33
+    if (rand < 99.33) return 5.88; // 97.66 + 1.67
+    return 8.88;
   };
 
   const times = [
@@ -300,12 +300,12 @@ export const generateMockDrawRecords = (amounts?: number[]): GlobalDrawRecord[] 
 };
 
 const WHEEL_SECTORS = [
+  { value: 0.18, type: 'envelope' },
+  { value: 0.38, type: 'envelope' },
   { value: 0.88, type: 'envelope' },
   { value: 1.88, type: 'envelope' },
-  { value: 2.88, type: 'envelope' },
   { value: 5.88, type: 'envelope' },
-  { value: 8.88, type: 'envelope' },
-  { value: 18.88, type: 'envelope' }
+  { value: 8.88, type: 'envelope' }
 ];
 
 function getSectorPath(startAngle: number, endAngle: number, r: number) {
@@ -464,29 +464,29 @@ export default function WeekendMedleyView({
   const [selectError, setSelectError] = useState<string | null>(null);
 
   const [remainingPrizes, setRemainingPrizes] = useState<number[]>(() => {
-    const saved = localStorage.getItem('weekend_lottery_remaining_prizes_v3');
+    const saved = localStorage.getItem('weekend_lottery_remaining_prizes_v5');
     if (saved) return JSON.parse(saved);
     
-    // Exactly 50 opportunities, summing to exactly 200元
+    // Exactly 300 opportunities, summing to exactly 200元 (6 levels)
     const pool = [
-      ...Array(2).fill(18.88),
-      ...Array(5).fill(8.88),
-      ...Array(6).fill(5.88),
-      ...Array(15).fill(2.88),
-      ...Array(20).fill(1.88),
-      ...Array(2).fill(0.88)
+      ...Array(2).fill(8.88),
+      ...Array(5).fill(5.88),
+      ...Array(25).fill(1.88),
+      ...Array(40).fill(0.88),
+      ...Array(148).fill(0.38),
+      ...Array(80).fill(0.18)
     ];
-    // Shuffle the exact 50 entries
+    // Shuffle the exact 300 entries
     const shuffled = pool.sort(() => Math.random() - 0.5);
     // 15 entries pre-drawn for mock global records
     const preDrawn = shuffled.slice(0, 15);
     const remaining = shuffled.slice(15);
     
-    localStorage.setItem('weekend_lottery_remaining_prizes_v3', JSON.stringify(remaining));
+    localStorage.setItem('weekend_lottery_remaining_prizes_v5', JSON.stringify(remaining));
     
     // Consistent mock data based on the 15 pre-drawn entries
     const mocks = generateMockDrawRecords(preDrawn);
-    localStorage.setItem('weekend_medley_global_draw_records_v1', JSON.stringify(mocks));
+    localStorage.setItem('weekend_medley_global_draw_records_v3', JSON.stringify(mocks));
     
     return remaining;
   });
@@ -497,10 +497,10 @@ export default function WeekendMedleyView({
   const poolBalance = activeRemainingPrizes.reduce((sum, val) => sum + val, 0);
 
   const [globalRecords, setGlobalRecords] = useState<GlobalDrawRecord[]>(() => {
-    const saved = localStorage.getItem('weekend_medley_global_draw_records_v1');
+    const saved = localStorage.getItem('weekend_medley_global_draw_records_v3');
     if (saved) return JSON.parse(saved);
     const initial = generateMockDrawRecords();
-    localStorage.setItem('weekend_medley_global_draw_records_v1', JSON.stringify(initial));
+    localStorage.setItem('weekend_medley_global_draw_records_v3', JSON.stringify(initial));
     return initial;
   });
   const [isDrawing, setIsDrawing] = useState(false);
@@ -844,7 +844,7 @@ export default function WeekendMedleyView({
       // Deduct from remaining prizes pool
       const nextRemaining = remainingPrizes.slice(1);
       setRemainingPrizes(nextRemaining);
-      localStorage.setItem('weekend_lottery_remaining_prizes_v3', JSON.stringify(nextRemaining));
+      localStorage.setItem('weekend_lottery_remaining_prizes_v5', JSON.stringify(nextRemaining));
 
       const newUserRecord: GlobalDrawRecord = {
         id: `user-${Date.now()}`,
@@ -855,7 +855,7 @@ export default function WeekendMedleyView({
       };
       setGlobalRecords(prev => {
         const updated = [newUserRecord, ...prev];
-        localStorage.setItem('weekend_medley_global_draw_records_v1', JSON.stringify(updated));
+        localStorage.setItem('weekend_medley_global_draw_records_v3', JSON.stringify(updated));
         return updated;
       });
 
@@ -1343,18 +1343,18 @@ export default function WeekendMedleyView({
               {activeRemainingPrizes.length === 0 ? (
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rose-500/15 bg-rose-950/20 text-rose-400 text-[10px] font-black tracking-wider uppercase">
                   <AlertCircle size={10} className="text-rose-400 animate-pulse" />
-                  <span>本期 50 次抽奖已全部抽满抢空！</span>
+                  <span>本期 300 次抽奖已全部抽满抢空！</span>
                 </div>
               ) : (
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#ffe082]/15 bg-[#1a1710]/80 text-[#f5cb4e] text-[10px] font-black tracking-wider uppercase">
                   <Sparkles size={10} className="text-[#f5cb4e] animate-pulse" />
-                  <span>50次抽奖机会，抽空即止，先到先得！</span>
+                  <span>300次抽奖机会，抽空即止，先到先得！</span>
                 </div>
               )}
               
               {(() => {
                 const remainingChances = activeRemainingPrizes.length;
-                const usedChances = 50 - remainingChances;
+                const usedChances = 300 - remainingChances;
                 return (
                    <div className="w-full max-w-[240px] flex justify-between items-center text-[10px] text-zinc-400 bg-black/20 border border-white/5 rounded-xl px-3.5 py-2 font-bold shadow-inner">
                     <span className="flex items-center gap-1 text-zinc-500">
@@ -1396,7 +1396,7 @@ export default function WeekendMedleyView({
                     transition={{ delay: 0.3 }}
                     className="text-[10.5px] text-zinc-400 mt-2 max-w-[180px] leading-relaxed font-medium"
                   >
-                    50次现金抽奖名额已全部发放完毕。下期活动正在筹备中，敬请期待！
+                    300次现金抽奖名额已全部发放完毕。下期活动正在筹备中，敬请期待！
                   </motion.p>
                 </div>
               )}
@@ -1627,12 +1627,12 @@ export default function WeekendMedleyView({
             {/* Six column horizontal layout cards */}
             <div className="grid grid-cols-6 gap-1 pt-0.5">
               {[
-                { val: 0.88, rate: '4%' },
-                { val: 1.88, rate: '40%' },
-                { val: 2.88, rate: '30%' },
-                { val: 5.88, rate: '12%' },
-                { val: 8.88, rate: '10%' },
-                { val: 18.88, rate: '4%' }
+                { val: 0.18, rate: '26.67%' },
+                { val: 0.38, rate: '49.33%' },
+                { val: 0.88, rate: '13.33%' },
+                { val: 1.88, rate: '8.33%' },
+                { val: 5.88, rate: '1.67%' },
+                { val: 8.88, rate: '0.67%' }
               ].map((p, idx) => (
                 <div 
                   key={idx}
@@ -1641,7 +1641,7 @@ export default function WeekendMedleyView({
                   <span className="text-[10px] font-mono font-black text-[#ffe082] block tracking-tighter leading-none">
                     ¥{p.val}
                   </span>
-                  <span className="text-[8px] text-[#8e8e93] font-bold block leading-none">
+                  <span className="text-[8.5px] text-[#8e8e93] font-bold block leading-none">
                     {p.rate}
                   </span>
                 </div>
@@ -1841,7 +1841,7 @@ export default function WeekendMedleyView({
 
             {/* Explanatory introduction text */}
             <p className="text-[11.5px] text-slate-300 leading-relaxed font-semibold mt-3 max-w-[340px] drop-shadow-sm">
-              🏃‍♂️ <b>周末城市记忆串烧</b>：自定义跨域 3 条精选路线，在自然古迹间慢跑或漫步。全部达成即可解锁 100% 中奖的现金奖池红包抽奖机会！总共50次抽奖机会，先到先得！
+              🏃‍♂️ <b>周末城市记忆串烧</b>：自定义跨域 3 条精选路线，在自然古迹间慢跑或漫步。全部达成即可解锁 100% 中奖的现金奖池红包抽奖机会！总共300次抽奖机会，先到先得！
             </p>
 
             {/* Integrated activity opening schedule banner with custom thin borders */}
