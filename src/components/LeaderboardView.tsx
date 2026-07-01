@@ -1,4 +1,5 @@
-import { ChevronRight, Trophy, Zap, MapPin } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronRight, Trophy, Zap, MapPin, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface LeaderboardViewProps {
@@ -17,16 +18,24 @@ const leaderboardData = [
 ];
 
 export default function LeaderboardView({ onBack }: LeaderboardViewProps) {
+  const [showRules, setShowRules] = useState(false);
+
   return (
     <div className="w-full h-full bg-[#05070A] overflow-y-auto pb-24 text-slate-100 font-sans hide-scrollbar relative">
-      <div className="sticky top-0 z-20 bg-black/40 backdrop-blur-md pt-safeb flex items-center px-4 py-4 border-b border-white/10">
+      <div className="sticky top-0 z-20 bg-black/40 backdrop-blur-md pt-safeb flex items-center justify-between px-4 py-4 border-b border-white/10">
         <button 
           onClick={onBack} 
-          className="w-8 h-8 flex items-center justify-center bg-white/5 rounded-full hover:bg-white/10 transition-colors"
+          className="w-8 h-8 flex items-center justify-center bg-white/5 rounded-full hover:bg-white/10 transition-colors shrink-0"
         >
           <ChevronRight className="rotate-180" size={20} />
         </button>
-        <h1 className="flex-1 text-center font-bold tracking-widest text-slate-100 pr-8">全球点亮榜</h1>
+        <h1 className="font-bold tracking-widest text-slate-100 text-center flex-1">全球点亮榜</h1>
+        <button 
+          onClick={() => setShowRules(true)}
+          className="text-xs font-bold text-slate-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full shrink-0"
+        >
+          规则说明
+        </button>
       </div>
 
       {/* Top 3 Podium */}
@@ -122,6 +131,41 @@ export default function LeaderboardView({ onBack }: LeaderboardViewProps) {
             </div>
          </div>
       </div>
+
+      {/* Rules Description Modal */}
+      <AnimatePresence>
+        {showRules && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowRules(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              className="bg-[#0e1624] border border-white/15 rounded-3xl p-6 w-[280px] relative z-10 shadow-2xl text-center"
+            >
+              <div className="mx-auto w-12 h-12 rounded-full bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-center mb-3 text-cyan-400">
+                <HelpCircle size={22} className="animate-pulse" />
+              </div>
+              <h3 className="text-sm font-black text-slate-100 mb-2 tracking-wider">规则说明</h3>
+              <p className="text-xs text-slate-300 leading-relaxed font-semibold">
+                排行榜仅展示最近30天的光迹值
+              </p>
+              <button
+                onClick={() => setShowRules(false)}
+                className="mt-5 w-full py-2 rounded-xl bg-cyan-500 hover:bg-cyan-600 active:scale-[0.98] text-xs font-black text-slate-950 transition-all shadow-[0_0_15px_rgba(34,211,238,0.2)]"
+              >
+                我知道了
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
