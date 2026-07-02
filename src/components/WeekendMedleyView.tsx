@@ -1817,7 +1817,7 @@ export default function WeekendMedleyView({
               </button>
 
               <div className="bg-[#12231c]/70 border border-emerald-500/20 px-3 py-1.5 rounded-full text-[10px] font-black text-emerald-400 tracking-wider flex items-center gap-1.5 shadow-[0_4px_12px_rgba(16,185,129,0.15)]">
-                <span>📅 周末限时开放</span>
+                <span>📅 每周末开放</span>
               </div>
             </div>
           </div>

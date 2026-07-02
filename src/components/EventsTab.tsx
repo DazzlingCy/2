@@ -31,7 +31,7 @@ export default function EventsTab({ onSelectMedley }: EventsTabProps) {
           
           <div className="absolute top-3 right-3 bg-emerald-500/30 backdrop-blur-md text-[9px] uppercase tracking-widest font-extrabold px-2.5 py-1 rounded-full text-[#a1f2da] flex items-center gap-1 shadow-lg border border-emerald-500/50">
             <Calendar size={10} className="animate-pulse" />
-            周末限时开放
+            每周末开放
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 p-3.5">
@@ -81,7 +81,7 @@ export default function EventsTab({ onSelectMedley }: EventsTabProps) {
           
           <div className="absolute top-3 right-3 bg-amber-500/20 backdrop-blur-sm text-[9px] uppercase tracking-widest font-bold px-2.5 py-1 rounded-full text-amber-200 flex items-center gap-1 shadow-lg border border-amber-500/50">
             <Sparkles size={10} className="animate-pulse" />
-            限时开启
+            每日开放
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 p-3.5">
@@ -127,7 +127,7 @@ export default function EventsTab({ onSelectMedley }: EventsTabProps) {
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent pointer-events-none" />
           
           <div className="absolute top-3 right-3 bg-purple-500/20 backdrop-blur-sm text-[9px] uppercase tracking-widest font-bold px-2.5 py-1 rounded-full text-purple-200 flex items-center gap-1 shadow-lg border border-purple-500/50">
-            S1 赛季
+            抽免费旅行
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 p-3.5">
